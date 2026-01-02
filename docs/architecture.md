@@ -436,6 +436,112 @@ Content-Type: application/json
 - **Data Encryption**: Sensitive user data encrypted at rest
 - **Audit Logs**: All moderation actions are logged
 
+### 7.4 Role-Based Access Control (RBAC)
+
+The system uses a simple role hierarchy with four levels:
+
+#### Role Hierarchy
+
+```
+SUPER_ADMIN (Level 3)
+    │
+    ▼
+  ADMIN (Level 2)
+    │
+    ▼
+MODERATOR (Level 1)
+    │
+    ▼
+   USER (Level 0)
+```
+
+#### Role Definitions
+
+| Role            | Description              | Use Case                              |
+| --------------- | ------------------------ | ------------------------------------- |
+| **USER**        | Default registered user  | Citizens reporting and viewing crimes |
+| **MODERATOR**   | Trusted community member | First-line content moderation         |
+| **ADMIN**       | Platform manager         | Full platform management              |
+| **SUPER_ADMIN** | System owner             | Technical administration              |
+
+#### Permissions Matrix
+
+| Permission                 | USER | MODERATOR | ADMIN | SUPER_ADMIN |
+| -------------------------- | :--: | :-------: | :---: | :---------: |
+| View crime map             |  ✓   |     ✓     |   ✓   |      ✓      |
+| Submit crime report        |  ✓   |     ✓     |   ✓   |      ✓      |
+| Validate/deny reports      |  ✓   |     ✓     |   ✓   |      ✓      |
+| Save locations             |  ✓   |     ✓     |   ✓   |      ✓      |
+| Receive alerts             |  ✓   |     ✓     |   ✓   |      ✓      |
+| Flag suspicious reports    |  –   |     ✓     |   ✓   |      ✓      |
+| Hide reports temporarily   |  –   |     ✓     |   ✓   |      ✓      |
+| View moderation queue      |  –   |     ✓     |   ✓   |      ✓      |
+| Remove reports permanently |  –   |     –     |   ✓   |      ✓      |
+| Suspend/ban users          |  –   |     –     |   ✓   |      ✓      |
+| View full analytics        |  –   |     –     |   ✓   |      ✓      |
+| Manage moderators          |  –   |     –     |   ✓   |      ✓      |
+| Manage admins              |  –   |     –     |   –   |      ✓      |
+| System configuration       |  –   |     –     |   –   |      ✓      |
+| View audit logs            |  –   |     –     |   –   |      ✓      |
+
+#### Role Enum Schema
+
+```typescript
+// Prisma Schema
+enum UserRole {
+  USER
+  MODERATOR
+  ADMIN
+  SUPER_ADMIN
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  passwordHash  String
+  role          UserRole  @default(USER)
+  isVerified    Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  reports       CrimeReport[]
+  validations   CrimeValidation[]
+}
+```
+
+#### Authorization Middleware
+
+```typescript
+// Role hierarchy for permission checks
+const roleHierarchy: Record<UserRole, number> = {
+  USER: 0,
+  MODERATOR: 1,
+  ADMIN: 2,
+  SUPER_ADMIN: 3,
+};
+
+// Middleware to check minimum required role
+function requireRole(minRole: UserRole) {
+  return (req: Request, res: Response, next: NextFunction) => {
+    const userRole = req.user?.role || "USER";
+
+    if (roleHierarchy[userRole] >= roleHierarchy[minRole]) {
+      next();
+    } else {
+      res.status(403).json({ error: "Insufficient permissions" });
+    }
+  };
+}
+
+// Usage example
+app.delete(
+  "/api/crimes/:id",
+  requireAuth,
+  requireRole("ADMIN"),
+  deleteCrimeReport
+);
+```
+
 ---
 
 ## 8. Real-Time Communication
