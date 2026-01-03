@@ -227,40 +227,281 @@ app.put(
 | DOMPurify              | XSS sanitization for user-generated content | P1       |
 | @t3-oss/env-nextjs     | Type-safe environment variable validation   | P0       |
 
-### 4.2 Authentication UI
+### 4.2 Reusable Components
 
-| Component        | Description               | Priority |
-| ---------------- | ------------------------- | -------- |
-| Login page       | Email/password login form | P0       |
-| Register page    | User registration form    | P0       |
-| Auth provider    | Context for auth state    | P0       |
-| Protected routes | Route guards for auth     | P0       |
-| Password reset   | Forgot password flow      | P2       |
+| Component      | Description                                  | Priority |
+| -------------- | -------------------------------------------- | -------- |
+| Button         | Primary, secondary, danger, ghost variants   | P0       |
+| Input          | Text, email, password with validation states | P0       |
+| Modal          | Accessible dialog with backdrop              | P0       |
+| Card           | Content container with variants              | P0       |
+| LoadingSpinner | Animated loading indicator                   | P0       |
+| Skeleton       | Content placeholder for loading states       | P1       |
+| Toast          | Notification popups (success, error, info)   | P0       |
+| Badge          | Status indicators, role badges               | P1       |
+| Dropdown       | Select menus and action menus                | P1       |
+| Tabs           | Tab navigation component                     | P1       |
+| Avatar         | User avatar with fallback initials           | P1       |
+| Pagination     | Page navigation for lists                    | P1       |
+| EmptyState     | Placeholder for empty lists/searches         | P1       |
+| ConfirmDialog  | Confirmation modal for destructive actions   | P0       |
 
-### 4.3 Core Pages
+#### Component Directory Structure
 
-| Page         | Route         | Description                     | Priority | Required Role |
-| ------------ | ------------- | ------------------------------- | -------- | ------------- |
-| Home         | `/`           | Map view with crime markers     | P0       | Public        |
-| Report Crime | `/report`     | Crime submission form           | P0       | USER+         |
-| Search       | `/search`     | Location-based search           | P1       | Public        |
-| Dashboard    | `/dashboard`  | Analytics & statistics          | P1       | ADMIN+        |
-| Profile      | `/profile`    | User settings & saved locations | P2       | USER+         |
-| Moderation   | `/moderate`   | Report moderation queue         | P1       | MODERATOR+    |
-| Admin        | `/admin`      | User & system management        | P1       | ADMIN+        |
-| Super Admin  | `/superadmin` | Role management & audit logs    | P1       | SUPER_ADMIN   |
+```
+components/
+├── ui/                    # shadcn/ui components
+│   ├── button.tsx
+│   ├── input.tsx
+│   ├── dialog.tsx
+│   ├── card.tsx
+│   ├── skeleton.tsx
+│   ├── toast.tsx
+│   ├── badge.tsx
+│   └── ...
+├── common/
+│   ├── LoadingSpinner.tsx
+│   ├── EmptyState.tsx
+│   ├── ConfirmDialog.tsx
+│   └── ErrorFallback.tsx
+├── forms/
+│   ├── CrimeReportForm.tsx
+│   ├── LoginForm.tsx
+│   └── RegisterForm.tsx
+├── layout/
+│   ├── Header.tsx
+│   ├── Footer.tsx
+│   ├── Sidebar.tsx
+│   └── MobileNav.tsx
+└── map/
+    ├── CrimeMap.tsx
+    ├── HeatmapLayer.tsx
+    ├── MarkerCluster.tsx
+    └── LocationPicker.tsx
+```
 
-### 4.4 Role-Based UI Components
+### 4.3 Layout System
 
-| Component        | Description                           | Priority |
-| ---------------- | ------------------------------------- | -------- |
-| RoleGuard        | HOC to protect routes by role         | P0       |
-| useAuth hook     | Hook returning user info & role       | P0       |
-| RoleIndicator    | Badge showing user's role             | P1       |
-| AdminSidebar     | Navigation for admin panel            | P1       |
-| PermissionButton | Button that shows/hides based on role | P1       |
+| Task         | Description                                    | Priority |
+| ------------ | ---------------------------------------------- | -------- |
+| RootLayout   | Base layout with providers, fonts, metadata    | P0       |
+| PublicLayout | Layout for unauthenticated pages (login, home) | P0       |
+| AuthLayout   | Layout for authenticated users with header/nav | P0       |
+| AdminLayout  | Sidebar layout for admin/moderator panels      | P1       |
+| ErrorLayout  | Minimal layout for error pages                 | P1       |
 
-### 4.5 API Services & Integration
+#### Layout Structure
+
+```typescript
+// app/layout.tsx - Root layout with providers
+<html>
+  <body>
+    <QueryProvider>
+      <ThemeProvider>
+        <Toaster />
+        {children}
+      </ThemeProvider>
+    </QueryProvider>
+  </body>
+</html>
+
+// app/(public)/layout.tsx - Public pages
+<PublicLayout>
+  <Header />
+  <main>{children}</main>
+  <Footer />
+</PublicLayout>
+
+// app/(auth)/layout.tsx - Authenticated pages
+<PrivateRoute>
+  <AuthLayout>
+    <Header user={user} />
+    <main>{children}</main>
+  </AuthLayout>
+</PrivateRoute>
+
+// app/(admin)/layout.tsx - Admin panel
+<PrivateRoute requiredRole="ADMIN">
+  <AdminLayout>
+    <Sidebar />
+    <main>{children}</main>
+  </AdminLayout>
+</PrivateRoute>
+```
+
+### 4.4 Error Handling & Feedback
+
+| Task              | Description                                       | Priority |
+| ----------------- | ------------------------------------------------- | -------- |
+| ErrorBoundary     | React error boundary wrapping app sections        | P0       |
+| Toast system      | Sonner/react-hot-toast for notifications          | P0       |
+| 404 page          | Custom not found page                             | P0       |
+| 500 page          | Server error page                                 | P0       |
+| 403 page          | Unauthorized access page                          | P1       |
+| Offline page      | PWA offline fallback                              | P2       |
+| API error handler | Centralized error parsing with user-friendly msgs | P0       |
+
+#### Error Boundary Implementation
+
+```typescript
+// components/common/ErrorBoundary.tsx
+"use client";
+
+class ErrorBoundary extends React.Component {
+  state = { hasError: false, error: null };
+
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error };
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <ErrorFallback
+          error={this.state.error}
+          reset={() => this.setState({ hasError: false })}
+        />
+      );
+    }
+    return this.props.children;
+  }
+}
+```
+
+#### Toast Notifications
+
+```typescript
+// lib/toast.ts
+import { toast } from "sonner";
+
+export const showSuccess = (message: string) => toast.success(message);
+export const showError = (message: string) => toast.error(message);
+export const showLoading = (message: string) => toast.loading(message);
+
+// Usage in mutations
+const { mutate } = useSubmitCrime();
+mutate(data, {
+  onSuccess: () => showSuccess("Crime report submitted!"),
+  onError: (error) => showError(parseApiError(error)),
+});
+```
+
+### 4.5 State Management (Redux Toolkit)
+
+| Task           | Description                           | Priority |
+| -------------- | ------------------------------------- | -------- |
+| Store setup    | Configure Redux store with middleware | P0       |
+| Auth slice     | User session, tokens, login state     | P0       |
+| UI slice       | Sidebar state, modals, theme          | P1       |
+| Map slice      | Map center, zoom, active filters      | P1       |
+| Persist config | Redux persist for auth tokens         | P1       |
+
+#### Store Structure
+
+```typescript
+// store/index.ts
+import { configureStore } from "@reduxjs/toolkit";
+import { persistStore, persistReducer } from "redux-persist";
+import storage from "redux-persist/lib/storage";
+
+import authReducer from "./slices/authSlice";
+import uiReducer from "./slices/uiSlice";
+import mapReducer from "./slices/mapSlice";
+
+const persistConfig = { key: "auth", storage, whitelist: ["user", "tokens"] };
+
+export const store = configureStore({
+  reducer: {
+    auth: persistReducer(persistConfig, authReducer),
+    ui: uiReducer,
+    map: mapReducer,
+  },
+});
+
+// store/slices/authSlice.ts
+interface AuthState {
+  user: User | null;
+  accessToken: string | null;
+  refreshToken: string | null;
+  isAuthenticated: boolean;
+}
+
+const authSlice = createSlice({
+  name: "auth",
+  initialState,
+  reducers: {
+    setCredentials: (state, action) => { ... },
+    logout: (state) => { ... },
+  },
+});
+```
+
+### 4.6 Internationalization (i18n)
+
+| Task              | Description                       | Priority |
+| ----------------- | --------------------------------- | -------- |
+| next-intl setup   | Configure next-intl with locales  | P1       |
+| Locale files      | JSON translation files (en/bn)    | P1       |
+| Language switcher | UI component to switch languages  | P1       |
+| Date formatting   | Localized date/time with date-fns | P2       |
+| Number formatting | Localized number formats          | P2       |
+
+#### Translation File Structure
+
+```
+locales/
+├── en/
+│   ├── common.json      # Shared translations
+│   ├── auth.json        # Login/register strings
+│   ├── crimes.json      # Crime types, statuses
+│   └── errors.json      # Error messages
+└── bn/
+    ├── common.json
+    ├── auth.json
+    ├── crimes.json
+    └── errors.json
+```
+
+#### i18n Configuration
+
+```typescript
+// i18n.ts
+import { getRequestConfig } from "next-intl/server";
+
+export default getRequestConfig(async ({ locale }) => ({
+  messages: (await import(`./locales/${locale}/common.json`)).default,
+}));
+
+// middleware.ts - Locale detection
+import createMiddleware from "next-intl/middleware";
+
+export default createMiddleware({
+  locales: ["en", "bn"],
+  defaultLocale: "en",
+});
+```
+
+#### Usage Example
+
+```typescript
+// In components
+import { useTranslations } from "next-intl";
+
+export function LoginForm() {
+  const t = useTranslations("auth");
+
+  return (
+    <form>
+      <label>{t("email")}</label>
+      <button>{t("login")}</button>
+    </form>
+  );
+}
+```
+
+---
+
+### 4.7 API Services & Integration
 
 | Task                    | Description                                     | Priority |
 | ----------------------- | ----------------------------------------------- | -------- |
@@ -426,44 +667,121 @@ export interface ApiError {
 }
 ```
 
-### 4.6 Reusable Components
+### 4.8 Authentication UI
 
-```
-components/
-├── common/
-│   ├── Button.tsx
-│   ├── Input.tsx
-│   ├── Modal.tsx
-│   ├── Card.tsx
-│   ├── LoadingSpinner.tsx
-│   └── Toast.tsx
-├── forms/
-│   ├── CrimeReportForm.tsx
-│   ├── LoginForm.tsx
-│   └── RegisterForm.tsx
-├── layout/
-│   ├── Header.tsx
-│   ├── Footer.tsx
-│   ├── Sidebar.tsx
-│   └── MobileNav.tsx
-└── map/
-    ├── CrimeMap.tsx
-    ├── HeatmapLayer.tsx
-    ├── MarkerCluster.tsx
-    └── LocationPicker.tsx
+| Component        | Description               | Priority |
+| ---------------- | ------------------------- | -------- |
+| Login page       | Email/password login form | P0       |
+| Register page    | User registration form    | P0       |
+| Auth provider    | Context for auth state    | P0       |
+| Protected routes | Route guards for auth     | P0       |
+| Password reset   | Forgot password flow      | P2       |
+
+### 4.9 Private Route / Route Protection
+
+| Task                   | Description                                                       | Priority |
+| ---------------------- | ----------------------------------------------------------------- | -------- |
+| PrivateRoute component | HOC/wrapper that checks auth state and redirects if not logged in | P0       |
+| RoleGuard component    | Wrapper that restricts access based on user role                  | P0       |
+| Auth loading state     | Show loading spinner while checking auth status                   | P0       |
+| Redirect after login   | Store intended destination and redirect after successful login    | P1       |
+| Session persistence    | Restore auth state from tokens on page refresh                    | P0       |
+| Unauthorized page      | Display 403 page when user lacks required role                    | P1       |
+
+#### Route Protection Implementation
+
+```typescript
+// components/auth/PrivateRoute.tsx
+interface PrivateRouteProps {
+  children: React.ReactNode;
+  requiredRole?: UserRole; // Optional minimum role requirement
+}
+
+// Usage in app layout
+<PrivateRoute requiredRole="ADMIN">
+  <AdminDashboard />
+</PrivateRoute>;
 ```
 
-### 4.7 Deliverables
+#### Protected Route Examples
+
+```typescript
+// Public routes (no protection)
+/                   // Home/Map view
+/login              // Login page
+/register           // Registration page
+
+// Authenticated routes (any logged-in user)
+/report             // Submit crime report
+/profile            // User profile
+
+// Role-protected routes
+/moderate           // MODERATOR+ only
+/dashboard          // ADMIN+ only
+/admin              // ADMIN+ only
+/admin/users        // ADMIN+ only
+/superadmin         // SUPER_ADMIN only
+```
+
+#### Auth State Management
+
+```typescript
+// hooks/useAuth.ts
+export const useAuth = () => {
+  const { data: user, isLoading } = useCurrentUser();
+
+  return {
+    user,
+    isLoading,
+    isAuthenticated: !!user,
+    hasRole: (role: UserRole) => hasPermission(user?.role, role),
+  };
+};
+```
+
+---
+
+### 4.10 Role-Based UI Components
+
+| Component        | Description                           | Priority |
+| ---------------- | ------------------------------------- | -------- |
+| RoleGuard        | HOC to protect routes by role         | P0       |
+| useAuth hook     | Hook returning user info & role       | P0       |
+| RoleIndicator    | Badge showing user's role             | P1       |
+| AdminSidebar     | Navigation for admin panel            | P1       |
+| PermissionButton | Button that shows/hides based on role | P1       |
+
+### 4.11 Core Pages
+
+| Page         | Route         | Description                     | Priority | Required Role |
+| ------------ | ------------- | ------------------------------- | -------- | ------------- |
+| Home         | `/`           | Map view with crime markers     | P0       | Public        |
+| Report Crime | `/report`     | Crime submission form           | P0       | USER+         |
+| Search       | `/search`     | Location-based search           | P1       | Public        |
+| Dashboard    | `/dashboard`  | Analytics & statistics          | P1       | ADMIN+        |
+| Profile      | `/profile`    | User settings & saved locations | P2       | USER+         |
+| Moderation   | `/moderate`   | Report moderation queue         | P1       | MODERATOR+    |
+| Admin        | `/admin`      | User & system management        | P1       | ADMIN+        |
+| Super Admin  | `/superadmin` | Role management & audit logs    | P1       | SUPER_ADMIN   |
+
+### 4.12 Deliverables
 
 - [x] Complete authentication UI
+- [ ] Reusable UI component library (shadcn/ui)
+- [ ] Layout system (Public, Auth, Admin layouts)
+- [ ] Error boundaries and toast notifications
 - [ ] Crime report submission form
 - [ ] Responsive layout (mobile-first)
-- [ ] Loading states and error handling
+- [ ] Loading states (spinners & skeletons)
 - [ ] Form validation with React Hook Form + Zod
 - [ ] Axios client with auth interceptors
 - [ ] TanStack Query hooks for all API endpoints
 - [ ] API service modules (auth, crimes, users)
 - [ ] Type-safe API request/response definitions
+- [ ] Redux store with auth, UI, and map slices
+- [ ] Private route and role-based protection
+- [ ] 404, 403, and error pages
+- [ ] Internationalization (en/bn locales)
 
 ---
 
