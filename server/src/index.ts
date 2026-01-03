@@ -7,6 +7,7 @@ import swaggerUi from "swagger-ui-express";
 import { swaggerSpec } from "./utils/swagger";
 import { errorHandler } from "./middleware/error.middleware";
 import authRoutes from "./routes/auth.routes";
+import crimeRoutes from "./routes/crime.routes";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -60,6 +61,9 @@ app.get("/api", (_req, res) => {
 
 // Auth routes
 app.use("/api/auth", authRoutes);
+
+// Crime routes
+app.use("/api/crimes", crimeRoutes);
 
 // 404 handler
 app.use((_req, res) => {
