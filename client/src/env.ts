@@ -4,20 +4,15 @@ import { z } from "zod";
 
 export const env = createEnv({
   server: {
-    NODE_ENV: z.enum(["development", "test", "production"]),
-    // Add server-side env vars here
+    NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   },
   client: {
-    NEXT_PUBLIC_API_URL: z.string().url(),
-    // Add client-side env vars here
+    // Make API URL optional with a default for development
+    NEXT_PUBLIC_API_URL: z.string().url().default("http://localhost:5000/api"),
   },
-  // If you're using Next.js < 13.4.4, you'll need to specify the runtimeEnv manually
-  // runtimeEnv: {
-  //   NODE_ENV: process.env.NODE_ENV,
-  //   NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
-  // },
   // For Next.js >= 13.4.4, you only need to destructure client variables:
   experimental__runtimeEnv: {
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000/api",
   },
 });
+

@@ -260,7 +260,173 @@ app.put(
 | AdminSidebar     | Navigation for admin panel            | P1       |
 | PermissionButton | Button that shows/hides based on role | P1       |
 
-### 4.4 Reusable Components
+### 4.5 API Services & Integration
+
+| Task                    | Description                                     | Priority |
+| ----------------------- | ----------------------------------------------- | -------- |
+| Axios client setup      | Configure base URL, interceptors, timeout       | P0       |
+| Auth interceptor        | Attach JWT token to requests, handle 401s       | P0       |
+| TanStack Query provider | QueryClient configuration with defaults         | P0       |
+| Auth API service        | Login, register, logout, refresh token          | P0       |
+| Crime API service       | CRUD operations, geospatial queries             | P0       |
+| User API service        | Profile, role management (admin)                | P1       |
+| Error handling utils    | Centralized API error parsing & toast display   | P0       |
+| Type definitions        | Request/response types matching backend schemas | P0       |
+
+#### API Client Configuration
+
+```typescript
+// services/api/client.ts
+import axios from "axios";
+
+export const apiClient = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  timeout: 10000,
+  headers: { "Content-Type": "application/json" },
+});
+
+// Request interceptor - attach tokens
+apiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem("accessToken");
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
+
+// Response interceptor - handle 401, refresh tokens
+apiClient.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    if (error.response?.status === 401) {
+      // Handle token refresh or logout
+    }
+    return Promise.reject(error);
+  }
+);
+```
+
+#### TanStack Query Setup
+
+```typescript
+// providers/QueryProvider.tsx
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
+```
+
+#### API Service Modules
+
+```
+services/
+├── api/
+│   ├── client.ts          # Axios instance
+│   ├── auth.service.ts    # Auth API calls
+│   ├── crime.service.ts   # Crime CRUD + geo queries
+│   ├── user.service.ts    # User management
+│   └── types.ts           # API request/response types
+└── hooks/
+    ├── useAuth.ts         # Login, register, logout mutations
+    ├── useCrimes.ts       # Crime queries & mutations
+    ├── useUsers.ts        # Admin user management
+    └── useAlerts.ts       # Real-time alert subscriptions
+```
+
+#### Custom React Query Hooks
+
+```typescript
+// hooks/useCrimes.ts
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { crimeService } from "@/services/api/crime.service";
+
+// Fetch crimes with geospatial filters
+export const useCrimes = (filters: CrimeFilters) => {
+  return useQuery({
+    queryKey: ["crimes", filters],
+    queryFn: () => crimeService.getCrimes(filters),
+  });
+};
+
+// Submit a new crime report
+export const useSubmitCrime = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: crimeService.createCrime,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["crimes"] });
+    },
+  });
+};
+
+// hooks/useAuth.ts
+export const useLogin = () => {
+  return useMutation({
+    mutationFn: authService.login,
+    onSuccess: (data) => {
+      localStorage.setItem("accessToken", data.accessToken);
+      localStorage.setItem("refreshToken", data.refreshToken);
+    },
+  });
+};
+
+export const useCurrentUser = () => {
+  return useQuery({
+    queryKey: ["currentUser"],
+    queryFn: authService.getCurrentUser,
+    enabled: !!localStorage.getItem("accessToken"),
+  });
+};
+```
+
+#### API Type Definitions
+
+```typescript
+// services/api/types.ts
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface AuthResponse {
+  accessToken: string;
+  refreshToken: string;
+  user: User;
+}
+
+export interface CrimeFilters {
+  bbox?: [number, number, number, number]; // [minLng, minLat, maxLng, maxLat]
+  radius?: { lat: number; lng: number; distance: number };
+  type?: CrimeType;
+  startDate?: string;
+  endDate?: string;
+  status?: CrimeStatus;
+}
+
+export interface CreateCrimeRequest {
+  title: string;
+  description: string;
+  type: CrimeType;
+  severity: Severity;
+  latitude: number;
+  longitude: number;
+  occurredAt: string;
+  isAnonymous?: boolean;
+}
+
+export interface ApiError {
+  message: string;
+  statusCode: number;
+  errors?: Record<string, string[]>;
+}
+```
+
+### 4.6 Reusable Components
 
 ```
 components/
@@ -287,13 +453,17 @@ components/
     └── LocationPicker.tsx
 ```
 
-### 4.5 Deliverables
+### 4.7 Deliverables
 
 - [x] Complete authentication UI
 - [ ] Crime report submission form
 - [ ] Responsive layout (mobile-first)
 - [ ] Loading states and error handling
 - [ ] Form validation with React Hook Form + Zod
+- [ ] Axios client with auth interceptors
+- [ ] TanStack Query hooks for all API endpoints
+- [ ] API service modules (auth, crimes, users)
+- [ ] Type-safe API request/response definitions
 
 ---
 

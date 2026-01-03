@@ -4,7 +4,7 @@ import * as React from "react"
 import Link from "next/link"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import { Eye, EyeOff, Loader2, Mail } from "lucide-react"
+import { Eye, EyeOff, Loader2, Mail, AlertCircle } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { loginSchema, type LoginInput } from "@/lib/validations/auth"
@@ -18,12 +18,16 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
+import { useLogin } from "@/hooks"
+import { parseApiError } from "@/services/api"
 
 interface LoginFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 export function LoginForm({ className, ...props }: LoginFormProps) {
-  const [isLoading, setIsLoading] = React.useState<boolean>(false)
   const [showPassword, setShowPassword] = React.useState<boolean>(false)
+  const [errorMessage, setErrorMessage] = React.useState<string | null>(null)
+  
+  const loginMutation = useLogin()
 
   const form = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
@@ -34,19 +38,27 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
   })
 
   async function onSubmit(data: LoginInput) {
-    setIsLoading(true)
-    
-    // TODO: Integrate with backend API
-    setTimeout(() => {
-        console.log("Login data:", data)
-      setIsLoading(false)
-    }, 2000)
+    setErrorMessage(null)
+    try {
+      await loginMutation.mutateAsync(data)
+      // Redirect is handled in the useLogin hook
+    } catch (error) {
+      setErrorMessage(parseApiError(error))
+    }
   }
+
+  const isLoading = loginMutation.isPending
 
   return (
     <div className={cn("grid gap-6", className)} {...props}>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          {errorMessage && (
+            <div className="flex items-center gap-2 rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+              <AlertCircle className="h-4 w-4" />
+              <p>{errorMessage}</p>
+            </div>
+          )}
           <FormField
             control={form.control}
             name="email"

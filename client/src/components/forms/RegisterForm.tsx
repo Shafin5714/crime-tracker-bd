@@ -3,7 +3,7 @@
 import * as React from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import { Loader2 } from "lucide-react"
+import { Loader2, AlertCircle } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { registerSchema, type RegisterInput } from "@/lib/validations/auth"
@@ -18,11 +18,15 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Checkbox } from "@/components/ui/checkbox"
+import { useRegister } from "@/hooks"
+import { parseApiError } from "@/services/api"
 
 interface RegisterFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 export function RegisterForm({ className, ...props }: RegisterFormProps) {
-  const [isLoading, setIsLoading] = React.useState<boolean>(false)
+  const [errorMessage, setErrorMessage] = React.useState<string | null>(null)
+  
+  const registerMutation = useRegister()
 
   const form = useForm<RegisterInput>({
     resolver: zodResolver(registerSchema),
@@ -36,19 +40,32 @@ export function RegisterForm({ className, ...props }: RegisterFormProps) {
   })
 
   async function onSubmit(data: RegisterInput) {
-    setIsLoading(true)
-    
-    // TODO: Integrate with backend API
-    setTimeout(() => {
-      console.log("Register data:", data)
-      setIsLoading(false)
-    }, 2000)
+    setErrorMessage(null)
+    try {
+      // Only send what the API expects (name, email, password)
+      await registerMutation.mutateAsync({
+        name: data.name,
+        email: data.email,
+        password: data.password,
+      })
+      // Redirect is handled in the useRegister hook
+    } catch (error) {
+      setErrorMessage(parseApiError(error))
+    }
   }
+
+  const isLoading = registerMutation.isPending
 
   return (
     <div className={cn("grid gap-6", className)} {...props}>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          {errorMessage && (
+            <div className="flex items-center gap-2 rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+              <AlertCircle className="h-4 w-4" />
+              <p>{errorMessage}</p>
+            </div>
+          )}
           <FormField
             control={form.control}
             name="name"
