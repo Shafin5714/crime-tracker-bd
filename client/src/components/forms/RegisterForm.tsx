@@ -116,14 +116,14 @@ export function RegisterForm({ className, ...props }: RegisterFormProps) {
                 </FormControl>
                 <div className="space-y-1 leading-none">
                   <FormLabel className="font-normal text-muted-foreground">
-                    I agree to the <a href="/privacy" className="text-blue-600 hover:underline">Privacy Policy</a> and <a href="/terms" className="text-blue-600 hover:underline">Terms of Service</a>.
+                    I agree to the <a href="/privacy" className="text-primary hover:underline">Privacy Policy</a> and <a href="/terms" className="text-primary hover:underline">Terms of Service</a>.
                   </FormLabel>
                   <FormMessage />
                 </div>
               </FormItem>
             )}
           />
-          <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 h-10 text-base" disabled={isLoading}>
+          <Button type="submit" className="w-full h-10 text-base" disabled={isLoading}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Create Account
           </Button>

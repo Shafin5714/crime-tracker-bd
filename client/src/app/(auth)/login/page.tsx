@@ -6,7 +6,7 @@ export default function LoginPage() {
   return (
     <div>
         <div className="mb-6 flex items-center gap-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600 text-white">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                 <Shield className="h-6 w-6" />
             </div>
             <span className="text-xl font-bold tracking-tight">Crime Tracker BD</span>
@@ -25,7 +25,7 @@ export default function LoginPage() {
             Don&apos;t have an account?{" "}
             <Link
             href="/register"
-            className="font-medium text-blue-600 hover:text-blue-500 hover:underline"
+            className="font-medium text-primary hover:text-primary/80 hover:underline"
             >
             Register here
             </Link>

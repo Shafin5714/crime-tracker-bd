@@ -8,12 +8,12 @@ export default function RegisterPage() {
     <div>
         <div className="flex items-center justify-between mb-8">
              <div className="flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100 text-blue-600">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
                     <Shield className="h-5 w-5" />
                 </div>
                 <span className="text-lg font-bold tracking-tight">Crime Tracker BD</span>
             </div>
-            <Button variant="ghost" asChild className="text-blue-600 hover:text-blue-700 hover:bg-blue-50">
+            <Button variant="ghost" asChild className="text-primary hover:text-primary hover:bg-primary/10">
                  <Link href="/">Back to Home</Link>
             </Button>
         </div>
@@ -31,14 +31,14 @@ export default function RegisterPage() {
             Already have an account?{" "}
             <Link
             href="/login"
-            className="font-medium text-blue-600 hover:text-blue-500 hover:underline"
+            className="font-medium text-primary hover:text-primary/80 hover:underline"
             >
             Log in
             </Link>
         </p>
         
         <div className="mt-8 flex justify-center">
-            <div className="inline-flex items-center gap-2 rounded-full bg-green-50 px-3 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+            <div className="inline-flex items-center gap-2 rounded-full bg-success/10 px-3 py-1 text-xs font-medium text-success ring-1 ring-inset ring-success/20">
                 <Lock className="h-3 w-3" />
                 Secure & Anonymous
             </div>

@@ -72,7 +72,7 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
                     <FormLabel>Password</FormLabel>
                     <Link 
                         href="/forgot-password" 
-                        className="text-sm font-medium text-primary hover:underline hover:text-blue-600 transition-colors"
+                        className="text-sm font-medium text-primary hover:underline hover:text-primary/80 transition-colors"
                     >
                         Forgot Password?
                     </Link>
@@ -102,7 +102,7 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
               </FormItem>
             )}
           />
-          <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 h-10 text-base" disabled={isLoading}>
+          <Button type="submit" className="w-full h-10 text-base" disabled={isLoading}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Log In
           </Button>
