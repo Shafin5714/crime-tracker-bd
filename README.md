@@ -50,7 +50,22 @@ npm run db:generate  # Generate Prisma client
 npm run db:push      # Push schema to Neon
 ```
 
-### 4. Start Development
+### 4. Seed Database (Optional)
+
+```bash
+npm run db:seed
+```
+
+This creates test users for all roles:
+
+| Email                      | Password       | Role        |
+| -------------------------- | -------------- | ----------- |
+| superadmin@crimetracker.bd | SuperAdmin@123 | SUPER_ADMIN |
+| admin@crimetracker.bd      | Admin@123      | ADMIN       |
+| moderator@crimetracker.bd  | Moderator@123  | MODERATOR   |
+| user@crimetracker.bd       | User@123       | USER        |
+
+### 5. Start Development
 
 ```bash
 npm run dev
@@ -74,14 +89,35 @@ crime-tracker-bd/
 
 ## Available Scripts
 
-| Command              | Description                  |
-| -------------------- | ---------------------------- |
-| `npm run dev`        | Start both client and server |
-| `npm run dev:client` | Start only the client        |
-| `npm run dev:server` | Start only the server        |
-| `npm run build`      | Build all workspaces         |
-| `npm run lint`       | Lint all workspaces          |
-| `npm run db:studio`  | Open Prisma Studio           |
+| Command              | Description                   |
+| -------------------- | ----------------------------- |
+| `npm run dev`        | Start both client and server  |
+| `npm run dev:client` | Start only the client         |
+| `npm run dev:server` | Start only the server         |
+| `npm run build`      | Build all workspaces          |
+| `npm run lint`       | Lint all workspaces           |
+| `npm run db:studio`  | Open Prisma Studio            |
+| `npm run db:seed`    | Seed database with test users |
+
+## API Documentation
+
+The backend API is documented using **Swagger/OpenAPI 3.0**. Once the server is running, you can access the interactive API documentation at:
+
+📖 **Swagger UI**: [http://localhost:5000/api-docs](http://localhost:5000/api-docs)
+
+### Features
+
+- Interactive API explorer
+- Request/response examples
+- JWT authentication support
+- Try out endpoints directly from the browser
+
+### Available API Tags
+
+| Tag    | Description              |
+| ------ | ------------------------ |
+| Auth   | Authentication endpoints |
+| Crimes | Crime report endpoints   |
 
 ## Documentation
 

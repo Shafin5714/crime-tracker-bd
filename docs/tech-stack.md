@@ -74,6 +74,8 @@ A robust and scalable backend to handle concurrent requests and real-time data.
   - _Reasoning_: Sets various HTTP headers to protect against common web vulnerabilities (XSS, clickjacking, etc.).
 - **CORS**: [cors](https://www.npmjs.com/package/cors)
   - _Reasoning_: Enables Cross-Origin Resource Sharing, allowing the frontend to securely communicate with the API.
+- **API Documentation**: [Swagger/OpenAPI](https://swagger.io/) (via swagger-jsdoc + swagger-ui-express)
+  - _Reasoning_: Auto-generates interactive API documentation from JSDoc comments, accessible at `/api-docs`. Improves developer experience and API discoverability.
 
 ## 4. Database
 
