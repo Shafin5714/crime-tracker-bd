@@ -51,6 +51,7 @@
 | ------------------------- | -------------------------------------------------- | -------- |
 | Repository setup          | Initialize Git repo with proper branching strategy | P0       |
 | Monorepo structure        | Set up workspace for client and server             | P0       |
+| Concurrently setup        | Configure root scripts to run both servers         | P0       |
 | Environment configuration | Configure development, staging, production envs    | P0       |
 | Documentation             | Set up README, contributing guidelines             | P1       |
 
@@ -62,6 +63,10 @@ crime-tracker-bd/
 │   ├── src/
 │   │   ├── app/              # App Router pages
 │   │   ├── components/       # React components
+│   │   │   ├── ui/           # shadcn/ui components
+│   │   │   ├── map/          # Map-specific components
+│   │   │   ├── forms/        # Form components
+│   │   │   └── common/       # Shared components
 │   │   ├── hooks/            # Custom hooks
 │   │   ├── services/         # API services
 │   │   ├── store/            # Redux store
@@ -81,14 +86,14 @@ crime-tracker-bd/
 │   └── package.json
 ├── shared/                    # Shared types/utils
 ├── docs/                      # Documentation
-└── docker-compose.yml         # Local development
+└── .env.example               # Environment template
 ```
 
 ### 2.3 Database Setup
 
 | Task                    | Description                           | Priority |
 | ----------------------- | ------------------------------------- | -------- |
-| PostgreSQL installation | Set up PostgreSQL 15+ with Docker     | P0       |
+| PostgreSQL installation | Set up PostgreSQL 15+ locally         | P0       |
 | PostGIS extension       | Enable PostGIS for geospatial queries | P0       |
 | Prisma initialization   | Initialize Prisma with PostgreSQL     | P0       |
 | Schema design           | Create initial database schema        | P0       |
@@ -204,13 +209,23 @@ app.put(
 
 ### 4.1 Core Application Setup
 
-| Task                   | Description                 | Priority |
-| ---------------------- | --------------------------- | -------- |
-| Next.js initialization | App Router configuration    | P0       |
-| Tailwind CSS setup     | Design system configuration | P0       |
-| Redux Toolkit          | Store configuration         | P0       |
-| TanStack Query         | API client setup            | P0       |
-| Axios instance         | Interceptors for auth       | P0       |
+| Task                   | Description                                 | Priority |
+| ---------------------- | ------------------------------------------- | -------- |
+| Next.js initialization | App Router configuration                    | P0       |
+| TypeScript setup       | Type-safe development environment           | P0       |
+| Tailwind CSS setup     | Design system configuration                 | P0       |
+| shadcn/ui setup        | Install and configure UI components         | P0       |
+| Lucide React           | Icon library integration                    | P0       |
+| Redux Toolkit          | Global state management                     | P0       |
+| TanStack Query         | Server state caching & synchronization      | P0       |
+| Axios instance         | HTTP client with interceptors               | P0       |
+| React Hook Form        | Performant form handling                    | P0       |
+| Zod                    | Schema validation (shared with backend)     | P0       |
+| date-fns               | Date parsing & formatting for timestamps    | P1       |
+| next-intl              | Bangla/English internationalization         | P1       |
+| next-pwa               | Offline support & installable app           | P1       |
+| DOMPurify              | XSS sanitization for user-generated content | P1       |
+| @t3-oss/env-nextjs     | Type-safe environment variable validation   | P0       |
 
 ### 4.2 Authentication UI
 
@@ -288,14 +303,15 @@ components/
 
 ### 5.1 Map Implementation
 
-| Task                | Description                 | Priority |
-| ------------------- | --------------------------- | -------- |
-| React Leaflet setup | Base map configuration      | P0       |
-| OpenStreetMap tiles | Tile layer configuration    | P0       |
-| Crime markers       | Display crime locations     | P0       |
-| Marker clustering   | Group nearby markers        | P0       |
-| Popup details       | Crime info on marker click  | P0       |
-| Location picker     | Select location for reports | P0       |
+| Task                   | Description                         | Priority |
+| ---------------------- | ----------------------------------- | -------- |
+| React Leaflet setup    | Base map configuration              | P0       |
+| OpenStreetMap tiles    | Tile layer configuration            | P0       |
+| Crime markers          | Display crime locations             | P0       |
+| leaflet.markercluster  | Group nearby markers at low zoom    | P0       |
+| Popup details          | Crime info on marker click          | P0       |
+| Location picker        | Select location for reports         | P0       |
+| @turf/turf integration | Client-side geospatial calculations | P1       |
 
 ### 5.2 Heatmap Visualization
 
@@ -538,7 +554,7 @@ Week 15-16 ░░░░░░░░░░░░░░░░░░░░░░░
 | Field            | Value                 |
 | ---------------- | --------------------- |
 | **Version**      | 1.0                   |
-| **Last Updated** | January 2, 2026       |
+| **Last Updated** | January 3, 2026       |
 | **Status**       | Draft                 |
 | **Authors**      | Crime Tracker BD Team |
 

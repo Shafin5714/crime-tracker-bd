@@ -132,7 +132,8 @@ The system follows a **Modular Monolith** pattern for the MVP, with clear separa
 #### Frontend Module Structure
 
 ```
-src/
+client/
+├── src/
 ├── app/                    # Next.js App Router pages
 │   ├── (public)/          # Public routes
 │   │   ├── page.tsx       # Home (Map View)

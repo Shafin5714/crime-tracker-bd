@@ -100,3 +100,5 @@ A relational database with robust geospatial support is chosen to ensure data in
   - _Reasoning_: For pushing real-time alerts to users in the danger zone without them needing to refresh.
 - **Version Control**: [Git](https://git-scm.com/) & GitHub.
 - **Package Manager**: npm or pnpm.
+- **Monorepo Scripts**: [concurrently](https://www.npmjs.com/package/concurrently)
+  - _Reasoning_: Run frontend and backend development servers simultaneously from the root directory with a single command.
