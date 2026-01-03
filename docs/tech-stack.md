@@ -12,6 +12,8 @@ The frontend is built for performance and SEO, ensuring a smooth user experience
   - _Reasoning_: Ensures type safety, reducing runtime errors and improving code maintainability.
 - **Styling**: [Tailwind CSS](https://tailwindcss.com/)
   - _Reasoning_: Utility-first CSS framework for rapid UI development and easy responsive design.
+- **UI Components**: [shadcn/ui](https://ui.shadcn.com/)
+  - _Reasoning_: Collection of beautifully designed, accessible, and customizable components built on Radix UI primitives, styled with Tailwind CSS. Components are copy-pasted into the project, giving full control over the code.
 - **Icons**: [Lucide React](https://lucide.dev/)
   - _Reasoning_: Clean, consistent, and lightweight icon set.
 - **State Management**: [Redux Toolkit](https://redux-toolkit.js.org/)
@@ -22,8 +24,16 @@ The frontend is built for performance and SEO, ensuring a smooth user experience
   - _Reasoning_: Promise-based HTTP client with interceptor support for automatically attaching auth tokens and handling API errors globally.
 - **Form Handling**: [React Hook Form](https://react-hook-form.com/)
   - _Reasoning_: Performant, flexible forms with easy validation integration and minimal re-renders.
+- **Schema Validation**: [Zod](https://zod.dev/)
+  - _Reasoning_: TypeScript-first schema validation for client-side form validation, shared schemas with backend, and runtime type checking.
 - **Date Handling**: [date-fns](https://date-fns.org/)
   - _Reasoning_: Lightweight, modular date utility library for parsing, formatting, and manipulating crime report timestamps.
+- **Internationalization**: [next-intl](https://next-intl-docs.vercel.app/)
+  - _Reasoning_: Full i18n support for Next.js App Router, enabling Bangla and English language support across the platform.
+- **PWA Support**: [next-pwa](https://www.npmjs.com/package/next-pwa)
+  - _Reasoning_: Enables offline functionality and installable app experience, critical for users in areas with unstable network connectivity.
+- **XSS Sanitization**: [DOMPurify](https://github.com/cure53/DOMPurify)
+  - _Reasoning_: Sanitizes user-generated content (crime descriptions) to prevent XSS attacks when rendering HTML.
 - **Environment Validation**: [@t3-oss/env-nextjs](https://env.t3.gg/)
   - _Reasoning_: Type-safe environment variable validation at build time, preventing runtime errors from missing or invalid configuration.
 
@@ -33,6 +43,12 @@ The core feature of the application.
 
 - **Map Library**: [Leaflet](https://leafletjs.com/) (via [React Leaflet](https://react-leaflet.js.org/))
   - _Reasoning_: Lightweight, open-source, and mobile-friendly. Avoids the high costs of Google Maps API for a community project.
+- **Marker Clustering**: [leaflet.markercluster](https://github.com/Leaflet/Leaflet.markercluster)
+  - _Reasoning_: Groups nearby crime markers at lower zoom levels for better performance and visual clarity.
+- **Heatmap Layer**: [leaflet-heat](https://github.com/Leaflet/Leaflet.heat)
+  - _Reasoning_: Renders crime density heatmaps for quick visual identification of high-crime areas.
+- **Geospatial Analysis**: [@turf/turf](https://turfjs.org/)
+  - _Reasoning_: Client-side geospatial calculations for distance, area, and point-in-polygon checks (e.g., "Is user inside danger zone?").
 - **Map Tiles**: [OpenStreetMap](https://www.openstreetmap.org/)
   - _Reasoning_: Free and reliable map tile provider.
 - **Data Visualization**: [Recharts](https://recharts.org/)

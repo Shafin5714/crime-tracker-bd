@@ -106,20 +106,28 @@ The system follows a **Modular Monolith** pattern for the MVP, with clear separa
 
 ### 4.1 Frontend Layer
 
-| Component          | Technology           | Purpose                                      |
-| ------------------ | -------------------- | -------------------------------------------- |
-| **Framework**      | Next.js (App Router) | SSR/SSG for SEO and fast initial loads       |
-| **Language**       | TypeScript           | Type safety and maintainability              |
-| **Styling**        | Tailwind CSS         | Utility-first responsive design              |
-| **Icons**          | Lucide React         | Lightweight, consistent iconography          |
-| **Global State**   | Redux Toolkit        | Client-side state management                 |
-| **Server State**   | TanStack Query       | Caching, fetching, and synchronization       |
-| **HTTP Client**    | Axios                | Promise-based HTTP with interceptor support  |
-| **Forms**          | React Hook Form      | Performant forms with validation integration |
-| **Date Handling**  | date-fns             | Lightweight date parsing and formatting      |
-| **Env Validation** | @t3-oss/env-nextjs   | Type-safe environment variable validation    |
-| **Maps**           | React Leaflet        | Interactive map rendering                    |
-| **Charts**         | Recharts             | Crime statistics visualization               |
+| Component             | Technology            | Purpose                                      |
+| --------------------- | --------------------- | -------------------------------------------- |
+| **Framework**         | Next.js (App Router)  | SSR/SSG for SEO and fast initial loads       |
+| **Language**          | TypeScript            | Type safety and maintainability              |
+| **Styling**           | Tailwind CSS          | Utility-first responsive design              |
+| **UI Components**     | shadcn/ui             | Accessible, customizable component library   |
+| **Icons**             | Lucide React          | Lightweight, consistent iconography          |
+| **Global State**      | Redux Toolkit         | Client-side state management                 |
+| **Server State**      | TanStack Query        | Caching, fetching, and synchronization       |
+| **HTTP Client**       | Axios                 | Promise-based HTTP with interceptor support  |
+| **Forms**             | React Hook Form       | Performant forms with validation integration |
+| **Validation**        | Zod                   | Client-side schema validation                |
+| **Date Handling**     | date-fns              | Lightweight date parsing and formatting      |
+| **i18n**              | next-intl             | Bangla/English internationalization          |
+| **PWA**               | next-pwa              | Offline support and installable app          |
+| **XSS Prevention**    | DOMPurify             | Sanitizes user-generated content             |
+| **Env Validation**    | @t3-oss/env-nextjs    | Type-safe environment variable validation    |
+| **Maps**              | React Leaflet         | Interactive map rendering                    |
+| **Marker Clustering** | leaflet.markercluster | Groups nearby markers at low zoom            |
+| **Heatmap**           | leaflet-heat          | Crime density visualization                  |
+| **Geospatial**        | @turf/turf            | Client-side spatial calculations             |
+| **Charts**            | Recharts              | Crime statistics visualization               |
 
 #### Frontend Module Structure
 
@@ -136,6 +144,7 @@ src/
 │   ├── dashboard/         # Analytics dashboard
 │   └── admin/             # Moderator panel
 ├── components/
+│   ├── ui/                # shadcn/ui components (Button, Dialog, etc.)
 │   ├── map/               # Map-related components
 │   │   ├── CrimeMap.tsx
 │   │   ├── HeatmapLayer.tsx
@@ -591,7 +600,7 @@ interface ServerToClientEvents {
 
 ## 9. Performance & Scalability
 
-### 10.1 Optimization Strategies
+### 9.1 Optimization Strategies
 
 | Strategy               | Implementation                       |
 | ---------------------- | ------------------------------------ |
@@ -602,7 +611,7 @@ interface ServerToClientEvents {
 | **Lazy Loading**       | Code splitting for dashboard/admin   |
 | **SSR/SSG**            | Next.js for initial page loads       |
 
-### 10.2 Scalability Path
+### 9.2 Scalability Path
 
 ```
 Phase 1 (MVP)              Phase 2 (Growth)           Phase 3 (Scale)
@@ -621,7 +630,7 @@ Single Server              Horizontal Scaling         Microservices
 
 ## 10. Future Considerations
 
-### 11.1 Planned Enhancements
+### 10.1 Planned Enhancements
 
 | Enhancement              | Architectural Impact                         |
 | ------------------------ | -------------------------------------------- |
@@ -631,7 +640,7 @@ Single Server              Horizontal Scaling         Microservices
 | **Gov Data Integration** | ETL pipeline for official datasets           |
 | **Advanced Analytics**   | Time-series database for historical analysis |
 
-### 11.2 Migration Path to Microservices
+### 10.2 Migration Path to Microservices
 
 If scaling demands increase, the following services can be extracted:
 
@@ -658,7 +667,7 @@ If scaling demands increase, the following services can be extracted:
 | Field            | Value                 |
 | ---------------- | --------------------- |
 | **Version**      | 1.0                   |
-| **Last Updated** | January 2, 2026       |
+| **Last Updated** | January 3, 2026       |
 | **Status**       | Draft                 |
 | **Authors**      | Crime Tracker BD Team |
 
