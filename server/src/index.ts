@@ -8,6 +8,7 @@ import { swaggerSpec } from "./utils/swagger";
 import { errorHandler } from "./middleware/error.middleware";
 import authRoutes from "./routes/auth.routes";
 import crimeRoutes from "./routes/crime.routes";
+import userRoutes from "./routes/user.routes";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -64,6 +65,9 @@ app.use("/api/auth", authRoutes);
 
 // Crime routes
 app.use("/api/crimes", crimeRoutes);
+
+// User routes (admin)
+app.use("/api/users", userRoutes);
 
 // 404 handler
 app.use((_req, res) => {
