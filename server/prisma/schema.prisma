@@ -1,0 +1,130 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [postgis]
+}
+
+// ==========================================
+// User & Authentication
+// ==========================================
+
+enum UserRole {
+  USER
+  MODERATOR
+  ADMIN
+  SUPER_ADMIN
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String?
+  role         UserRole @default(USER)
+  isVerified   Boolean  @default(false)
+  isBanned     Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  reports     CrimeReport[]
+  validations CrimeValidation[]
+
+  @@index([email])
+  @@index([role])
+}
+
+// ==========================================
+// Crime Reports
+// ==========================================
+
+enum CrimeType {
+  ROBBERY
+  HIJACKING
+  HARASSMENT
+  THEFT
+  ASSAULT
+  VANDALISM
+  MURDER
+  KIDNAPPING
+  FRAUD
+  OTHER
+}
+
+enum Severity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum ReportStatus {
+  UNVERIFIED
+  VERIFIED
+  DISPUTED
+  HIDDEN
+  REMOVED
+}
+
+model CrimeReport {
+  id                String       @id @default(cuid())
+  userId            String?
+  isAnonymous       Boolean      @default(false)
+  crimeType         CrimeType
+  description       String
+  severity          Severity
+  latitude          Float
+  longitude         Float
+  address           String
+  division          String? // Division of Bangladesh
+  district          String? // District
+  occurredAt        DateTime
+  status            ReportStatus @default(UNVERIFIED)
+  verificationCount Int          @default(0)
+  denialCount       Int          @default(0)
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  user        User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
+  validations CrimeValidation[]
+
+  @@index([crimeType])
+  @@index([severity])
+  @@index([status])
+  @@index([occurredAt])
+  @@index([latitude, longitude])
+  @@index([division])
+  @@index([district])
+}
+
+// ==========================================
+// Crime Validation (Confirm/Deny)
+// ==========================================
+
+enum ValidationType {
+  CONFIRM
+  DENY
+}
+
+model CrimeValidation {
+  id        String         @id @default(cuid())
+  reportId  String
+  userId    String
+  type      ValidationType
+  comment   String?
+  createdAt DateTime       @default(now())
+
+  report CrimeReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  user   User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([reportId, userId])
+  @@index([reportId])
+  @@index([userId])
+}
