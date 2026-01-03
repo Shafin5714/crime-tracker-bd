@@ -39,8 +39,13 @@ npm install
 ### 2. Environment Setup
 
 ```bash
-cp .env.example .env
-# Edit .env with your Neon database URL and secrets
+# Server environment (database, auth, server config)
+cp server/.env.example server/.env
+
+# Client environment (API URLs)
+cp client/.env.example client/.env.local
+
+# Edit both files with your configuration
 ```
 
 ### 3. Database Setup
