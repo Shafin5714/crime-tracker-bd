@@ -1,6 +1,123 @@
 {
-  "HomePage": {
-    "title": "ক্রাইম ট্র্যাকার বিডি",
-    "description": "বাংলাদেশে অপরাধ দেখুন এবং রিপোর্ট করুন"
+  "common": {
+    "appName": "ক্রাইম ট্র্যাকার বিডি",
+    "loading": "লোড হচ্ছে...",
+    "search": "অনুসন্ধান",
+    "submit": "জমা দিন",
+    "cancel": "বাতিল",
+    "save": "সংরক্ষণ",
+    "delete": "মুছুন",
+    "edit": "সম্পাদনা",
+    "view": "দেখুন",
+    "close": "বন্ধ করুন",
+    "back": "পেছনে",
+    "next": "পরবর্তী",
+    "previous": "পূর্ববর্তী",
+    "yes": "হ্যাঁ",
+    "no": "না",
+    "confirm": "নিশ্চিত করুন",
+    "viewAll": "সব দেখুন",
+    "showMore": "আরো দেখুন",
+    "showLess": "কম দেখুন"
+  },
+  "nav": {
+    "home": "হোম",
+    "map": "অপরাধ মানচিত্র",
+    "report": "অপরাধ রিপোর্ট",
+    "profile": "প্রোফাইল",
+    "settings": "সেটিংস",
+    "admin": "অ্যাডমিন প্যানেল",
+    "login": "লগ ইন",
+    "register": "সাইন আপ",
+    "logout": "লগ আউট"
+  },
+  "auth": {
+    "login": "লগ ইন",
+    "register": "সাইন আপ",
+    "email": "ইমেইল",
+    "password": "পাসওয়ার্ড",
+    "confirmPassword": "পাসওয়ার্ড নিশ্চিত করুন",
+    "name": "পুরো নাম",
+    "rememberMe": "মনে রাখুন",
+    "forgotPassword": "পাসওয়ার্ড ভুলে গেছেন?",
+    "noAccount": "অ্যাকাউন্ট নেই?",
+    "hasAccount": "ইতিমধ্যে অ্যাকাউন্ট আছে?",
+    "loginSuccess": "সফলভাবে লগ ইন হয়েছে!",
+    "registerSuccess": "অ্যাকাউন্ট সফলভাবে তৈরি হয়েছে!",
+    "logoutSuccess": "সফলভাবে লগ আউট হয়েছে!",
+    "invalidCredentials": "ভুল ইমেইল বা পাসওয়ার্ড",
+    "emailRequired": "ইমেইল প্রয়োজন",
+    "passwordRequired": "পাসওয়ার্ড প্রয়োজন",
+    "nameRequired": "নাম প্রয়োজন",
+    "passwordMismatch": "পাসওয়ার্ড মিলছে না",
+    "passwordMinLength": "পাসওয়ার্ড কমপক্ষে ৮ অক্ষরের হতে হবে"
+  },
+  "crimes": {
+    "title": "অপরাধ রিপোর্ট",
+    "reportCrime": "অপরাধ রিপোর্ট করুন",
+    "crimeType": "অপরাধের ধরন",
+    "severity": "তীব্রতা",
+    "status": "স্ট্যাটাস",
+    "location": "অবস্থান",
+    "description": "বিবরণ",
+    "occurredAt": "তারিখ ও সময়",
+    "anonymous": "বেনামে জমা দিন",
+    "anonymousHint": "আপনার পরিচয় প্রকাশ্যে দেখানো হবে না",
+    "types": {
+      "THEFT": "চুরি",
+      "ROBBERY": "ডাকাতি",
+      "ASSAULT": "হামলা",
+      "MURDER": "হত্যা",
+      "KIDNAPPING": "অপহরণ",
+      "FRAUD": "প্রতারণা",
+      "VANDALISM": "ভাংচুর",
+      "DRUG_OFFENSE": "মাদক অপরাধ",
+      "HARASSMENT": "হয়রানি",
+      "OTHER": "অন্যান্য"
+    },
+    "severities": {
+      "LOW": "নিম্ন",
+      "MEDIUM": "মাঝারি",
+      "HIGH": "উচ্চ",
+      "CRITICAL": "জটিল"
+    },
+    "statuses": {
+      "PENDING": "অপেক্ষমান",
+      "VERIFIED": "যাচাইকৃত",
+      "REJECTED": "প্রত্যাখ্যাত"
+    }
+  },
+  "map": {
+    "title": "অপরাধ মানচিত্র",
+    "filterCrimes": "অপরাধ ফিল্টার",
+    "showHeatmap": "হিটম্যাপ দেখান",
+    "showClusters": "ক্লাস্টার দেখান",
+    "myLocation": "আমার অবস্থান",
+    "locating": "অবস্থান খোঁজা হচ্ছে...",
+    "zoomIn": "জুম ইন",
+    "zoomOut": "জুম আউট",
+    "resetView": "ভিউ রিসেট",
+    "noResults": "এই এলাকায় কোনো অপরাধ পাওয়া যায়নি"
+  },
+  "errors": {
+    "generic": "কিছু ভুল হয়েছে",
+    "notFound": "পৃষ্ঠা পাওয়া যায়নি",
+    "unauthorized": "এই পৃষ্ঠায় প্রবেশের অনুমতি নেই",
+    "serverError": "সার্ভার ত্রুটি হয়েছে",
+    "networkError": "নেটওয়ার্ক ত্রুটি। অনুগ্রহ করে সংযোগ পরীক্ষা করুন।",
+    "tryAgain": "আবার চেষ্টা করুন",
+    "goHome": "হোমে যান",
+    "goBack": "পেছনে যান"
+  },
+  "footer": {
+    "platform": "প্ল্যাটফর্ম",
+    "support": "সহায়তা",
+    "legal": "আইনি",
+    "privacy": "গোপনীয়তা নীতি",
+    "terms": "সেবার শর্তাবলী",
+    "contact": "যোগাযোগ",
+    "help": "সাহায্য কেন্দ্র",
+    "copyright": "© {year} ক্রাইম ট্র্যাকার বিডি। সর্বস্বত্ব সংরক্ষিত।",
+    "tagline": "বাংলাদেশের জন্য ❤️ দিয়ে তৈরি"
   }
 }

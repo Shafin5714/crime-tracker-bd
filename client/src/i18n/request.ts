@@ -1,9 +1,18 @@
 import { getRequestConfig } from "next-intl/server";
+import { cookies } from "next/headers";
+
+export const locales = ["en", "bn"] as const;
+export type Locale = (typeof locales)[number];
+export const defaultLocale: Locale = "en";
 
 export default getRequestConfig(async () => {
-  // Provide a static locale, fetch a user setting,
-  // read from `cookies()`, `headers()`, etc.
-  const locale = "en";
+  // Read locale from cookie, or fall back to default
+  const cookieStore = await cookies();
+  const localeCookie = cookieStore.get("NEXT_LOCALE");
+  const locale: Locale =
+    localeCookie && locales.includes(localeCookie.value as Locale)
+      ? (localeCookie.value as Locale)
+      : defaultLocale;
 
   return {
     locale,

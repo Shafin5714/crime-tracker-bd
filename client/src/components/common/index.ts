@@ -4,3 +4,4 @@ export { EmptyState } from "./EmptyState";
 export { ConfirmDialog } from "./ConfirmDialog";
 export { Pagination } from "./Pagination";
 export { ErrorFallback } from "./ErrorFallback";
+export { LanguageSwitcher } from "./LanguageSwitcher";

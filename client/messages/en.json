@@ -1,6 +1,123 @@
 {
-  "HomePage": {
-    "title": "Crime Tracker BD",
-    "description": "Visualize and report crimes in Bangladesh"
+  "common": {
+    "appName": "Crime Tracker BD",
+    "loading": "Loading...",
+    "search": "Search",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "view": "View",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "yes": "Yes",
+    "no": "No",
+    "confirm": "Confirm",
+    "viewAll": "View All",
+    "showMore": "Show More",
+    "showLess": "Show Less"
+  },
+  "nav": {
+    "home": "Home",
+    "map": "Crime Map",
+    "report": "Report Crime",
+    "profile": "Profile",
+    "settings": "Settings",
+    "admin": "Admin Panel",
+    "login": "Log in",
+    "register": "Sign up",
+    "logout": "Log out"
+  },
+  "auth": {
+    "login": "Log in",
+    "register": "Sign up",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "name": "Full Name",
+    "rememberMe": "Remember me",
+    "forgotPassword": "Forgot password?",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "loginSuccess": "Logged in successfully!",
+    "registerSuccess": "Account created successfully!",
+    "logoutSuccess": "Logged out successfully!",
+    "invalidCredentials": "Invalid email or password",
+    "emailRequired": "Email is required",
+    "passwordRequired": "Password is required",
+    "nameRequired": "Name is required",
+    "passwordMismatch": "Passwords do not match",
+    "passwordMinLength": "Password must be at least 8 characters"
+  },
+  "crimes": {
+    "title": "Crime Reports",
+    "reportCrime": "Report a Crime",
+    "crimeType": "Crime Type",
+    "severity": "Severity",
+    "status": "Status",
+    "location": "Location",
+    "description": "Description",
+    "occurredAt": "Date & Time",
+    "anonymous": "Submit Anonymously",
+    "anonymousHint": "Your identity will not be shown publicly",
+    "types": {
+      "THEFT": "Theft",
+      "ROBBERY": "Robbery",
+      "ASSAULT": "Assault",
+      "MURDER": "Murder",
+      "KIDNAPPING": "Kidnapping",
+      "FRAUD": "Fraud",
+      "VANDALISM": "Vandalism",
+      "DRUG_OFFENSE": "Drug Offense",
+      "HARASSMENT": "Harassment",
+      "OTHER": "Other"
+    },
+    "severities": {
+      "LOW": "Low",
+      "MEDIUM": "Medium",
+      "HIGH": "High",
+      "CRITICAL": "Critical"
+    },
+    "statuses": {
+      "PENDING": "Pending",
+      "VERIFIED": "Verified",
+      "REJECTED": "Rejected"
+    }
+  },
+  "map": {
+    "title": "Crime Map",
+    "filterCrimes": "Filter Crimes",
+    "showHeatmap": "Show Heatmap",
+    "showClusters": "Show Clusters",
+    "myLocation": "My Location",
+    "locating": "Locating...",
+    "zoomIn": "Zoom In",
+    "zoomOut": "Zoom Out",
+    "resetView": "Reset View",
+    "noResults": "No crimes found in this area"
+  },
+  "errors": {
+    "generic": "Something went wrong",
+    "notFound": "Page not found",
+    "unauthorized": "You don't have permission to access this page",
+    "serverError": "Server error occurred",
+    "networkError": "Network error. Please check your connection.",
+    "tryAgain": "Try again",
+    "goHome": "Go Home",
+    "goBack": "Go Back"
+  },
+  "footer": {
+    "platform": "Platform",
+    "support": "Support",
+    "legal": "Legal",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "contact": "Contact Us",
+    "help": "Help Center",
+    "copyright": "© {year} Crime Tracker BD. All rights reserved.",
+    "tagline": "Built with ❤️ for Bangladesh"
   }
 }
