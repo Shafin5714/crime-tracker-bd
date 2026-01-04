@@ -1,16 +1,25 @@
 // ============================================================================
-// useAuth Hook - Authentication React Query hooks
+// useAuth Hook - Authentication React Query hooks integrated with Redux
 // ============================================================================
 
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { authService, clearTokens, getAccessToken } from "@/services/api";
+import { authService, clearTokens, getAccessToken, setTokens } from "@/services/api";
+import { hasPermission } from "@/lib/auth";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import {
+  setCredentials,
+  logout as logoutAction,
+  selectIsAuthenticated,
+  selectCurrentUser,
+} from "@/store/slices/authSlice";
 import type {
   LoginRequest,
   RegisterRequest,
   User,
+  UserRole,
 } from "@/types/api.types";
 
 // Query keys
@@ -21,11 +30,35 @@ export const authKeys = {
 
 /**
  * Hook to get the current authenticated user
+ * Fetches from API and syncs with Redux
  */
 export const useCurrentUser = () => {
+  const dispatch = useAppDispatch();
+
   return useQuery({
     queryKey: authKeys.currentUser(),
-    queryFn: () => authService.getCurrentUser(),
+    queryFn: async () => {
+      const user = await authService.getCurrentUser();
+      // Sync with Redux - update user data
+      const accessToken = getAccessToken();
+      const refreshToken = localStorage.getItem("refreshToken");
+      if (accessToken && refreshToken) {
+        dispatch(
+          setCredentials({
+            user: {
+              id: user.id,
+              email: user.email,
+              name: user.name || "",
+              role: user.role,
+              createdAt: user.createdAt,
+            },
+            accessToken,
+            refreshToken,
+          })
+        );
+      }
+      return user;
+    },
     enabled: typeof window !== "undefined" && !!getAccessToken(),
     staleTime: 5 * 60 * 1000, // 5 minutes
     retry: false,
@@ -38,14 +71,33 @@ export const useCurrentUser = () => {
 export const useLogin = () => {
   const queryClient = useQueryClient();
   const router = useRouter();
+  const dispatch = useAppDispatch();
 
   return useMutation({
     mutationFn: (data: LoginRequest) => authService.login(data),
     onSuccess: (data) => {
-      // Set the user in the cache
+      // Sync with Redux
+      dispatch(
+        setCredentials({
+          user: {
+            id: data.user.id,
+            email: data.user.email,
+            name: data.user.name || "",
+            role: data.user.role,
+            createdAt: data.user.createdAt,
+          },
+          accessToken: data.accessToken,
+          refreshToken: data.refreshToken,
+        })
+      );
+      // Set the user in TanStack Query cache
       queryClient.setQueryData(authKeys.currentUser(), data.user);
-      // Redirect to home
-      router.push("/");
+      // Also set tokens in localStorage (done in authService, but ensure sync)
+      setTokens(data.accessToken, data.refreshToken);
+      // Check for redirect path
+      const redirectPath = sessionStorage.getItem("redirectAfterLogin") || "/";
+      sessionStorage.removeItem("redirectAfterLogin");
+      router.push(redirectPath);
     },
   });
 };
@@ -56,11 +108,26 @@ export const useLogin = () => {
 export const useRegister = () => {
   const queryClient = useQueryClient();
   const router = useRouter();
+  const dispatch = useAppDispatch();
 
   return useMutation({
     mutationFn: (data: RegisterRequest) => authService.register(data),
     onSuccess: (data) => {
-      // Set the user in the cache
+      // Sync with Redux
+      dispatch(
+        setCredentials({
+          user: {
+            id: data.user.id,
+            email: data.user.email,
+            name: data.user.name || "",
+            role: data.user.role,
+            createdAt: data.user.createdAt,
+          },
+          accessToken: data.accessToken,
+          refreshToken: data.refreshToken,
+        })
+      );
+      // Set the user in TanStack Query cache
       queryClient.setQueryData(authKeys.currentUser(), data.user);
       // Redirect to home
       router.push("/");
@@ -74,11 +141,14 @@ export const useRegister = () => {
 export const useLogout = () => {
   const queryClient = useQueryClient();
   const router = useRouter();
+  const dispatch = useAppDispatch();
 
   return useMutation({
     mutationFn: () => authService.logout(),
     onSuccess: () => {
-      // Clear the user from cache
+      // Clear Redux state
+      dispatch(logoutAction());
+      // Clear the user from TanStack Query cache
       queryClient.setQueryData(authKeys.currentUser(), null);
       // Invalidate all queries
       queryClient.clear();
@@ -86,7 +156,8 @@ export const useLogout = () => {
       router.push("/login");
     },
     onError: () => {
-      // Even on error, clear tokens and redirect
+      // Even on error, clear everything and redirect
+      dispatch(logoutAction());
       clearTokens();
       queryClient.clear();
       router.push("/login");
@@ -96,18 +167,33 @@ export const useLogout = () => {
 
 /**
  * Combined auth hook for convenience
+ * Reads auth state from Redux using selectors
  */
 export const useAuth = () => {
-  const { data: user, isLoading, error } = useCurrentUser();
+  // Use selectors for computed state
+  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const user = useAppSelector(selectCurrentUser);
+  
+  // Use TanStack Query for API-level user data
+  const { isLoading, error } = useCurrentUser();
+  
   const loginMutation = useLogin();
   const registerMutation = useRegister();
   const logoutMutation = useLogout();
 
+  /**
+   * Check if the current user has at least the required role
+   */
+  const hasRole = (requiredRole: UserRole): boolean => {
+    return hasPermission(user?.role as UserRole | undefined, requiredRole);
+  };
+
   return {
-    user: user as User | null | undefined,
+    user: user as User | null,
     isLoading,
-    isAuthenticated: !!user,
+    isAuthenticated,
     error,
+    hasRole,
     login: loginMutation.mutateAsync,
     loginStatus: loginMutation,
     register: registerMutation.mutateAsync,

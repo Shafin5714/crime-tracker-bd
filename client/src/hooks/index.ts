@@ -22,3 +22,7 @@ export {
   useUnbanUser,
   userKeys,
 } from "./useUsers";
+
+// Re-export auth utilities for convenience
+export { hasPermission, roleHierarchy, getRoleLabel, getAssignableRoles } from "@/lib/auth";
+

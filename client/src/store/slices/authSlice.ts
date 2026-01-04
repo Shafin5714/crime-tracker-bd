@@ -15,16 +15,13 @@ export interface AuthState {
   user: User | null;
   accessToken: string | null;
   refreshToken: string | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
 }
 
+// Initial state - PersistGate handles loading, so no isLoading needed here
 const initialState: AuthState = {
   user: null,
   accessToken: null,
   refreshToken: null,
-  isAuthenticated: false,
-  isLoading: true, // Start as loading to check for persisted auth
 };
 
 const authSlice = createSlice({
@@ -42,8 +39,6 @@ const authSlice = createSlice({
       state.user = action.payload.user;
       state.accessToken = action.payload.accessToken;
       state.refreshToken = action.payload.refreshToken;
-      state.isAuthenticated = true;
-      state.isLoading = false;
     },
     updateUser: (state, action: PayloadAction<Partial<User>>) => {
       if (state.user) {
@@ -63,16 +58,6 @@ const authSlice = createSlice({
       state.user = null;
       state.accessToken = null;
       state.refreshToken = null;
-      state.isAuthenticated = false;
-      state.isLoading = false;
-    },
-    setLoading: (state, action: PayloadAction<boolean>) => {
-      state.isLoading = action.payload;
-    },
-    hydrateAuth: (state) => {
-      // Called after rehydration from persist
-      state.isLoading = false;
-      state.isAuthenticated = !!state.accessToken && !!state.user;
     },
   },
 });
@@ -82,8 +67,34 @@ export const {
   updateUser,
   updateTokens,
   logout,
-  setLoading,
-  hydrateAuth,
 } = authSlice.actions;
 
 export default authSlice.reducer;
+
+// ============================================================================
+// Selectors - Compute derived state
+// ============================================================================
+
+import type { RootState } from "../index";
+
+/**
+ * Selector to check if user is authenticated
+ * Computed from persisted user and accessToken
+ */
+export const selectIsAuthenticated = (state: RootState): boolean => {
+  return !!state.auth.user && !!state.auth.accessToken;
+};
+
+/**
+ * Selector to get current user
+ */
+export const selectCurrentUser = (state: RootState): User | null => {
+  return state.auth.user;
+};
+
+/**
+ * Selector to get access token
+ */
+export const selectAccessToken = (state: RootState): string | null => {
+  return state.auth.accessToken;
+};
