@@ -1,36 +1,55 @@
-import { configureStore, createSlice } from "@reduxjs/toolkit";
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
+import {
+  persistStore,
+  persistReducer,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from "redux-persist";
+import storage from "redux-persist/lib/storage";
 
-// Placeholder auth slice - will be expanded later
-// Using TanStack Query for server state, Redux for UI state only
-const uiSlice = createSlice({
-  name: "ui",
-  initialState: {
-    sidebarOpen: false,
-    theme: "dark" as "light" | "dark",
-  },
-  reducers: {
-    toggleSidebar: (state) => {
-      state.sidebarOpen = !state.sidebarOpen;
-    },
-    setTheme: (state, action) => {
-      state.theme = action.payload;
-    },
-  },
-});
+import { authReducer, uiReducer, mapReducer } from "./slices";
 
-export const { toggleSidebar, setTheme } = uiSlice.actions;
-
-export const makeStore = () => {
-  return configureStore({
-    reducer: {
-      ui: uiSlice.reducer,
-    },
-  });
+// Persist config for auth - only persist user and tokens
+const authPersistConfig = {
+  key: "auth",
+  storage,
+  whitelist: ["user", "accessToken", "refreshToken"],
 };
 
-// Infer the type of makeStore
-export type AppStore = ReturnType<typeof makeStore>;
-// Infer the `RootState` and `AppDispatch` types from the store itself
+// Persist config for UI - persist sidebar and theme preferences
+const uiPersistConfig = {
+  key: "ui",
+  storage,
+  whitelist: ["sidebarCollapsed", "theme"],
+};
+
+const rootReducer = combineReducers({
+  auth: persistReducer(authPersistConfig, authReducer),
+  ui: persistReducer(uiPersistConfig, uiReducer),
+  map: mapReducer, // Map state is not persisted
+});
+
+export const makeStore = () => {
+  const store = configureStore({
+    reducer: rootReducer,
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware({
+        serializableCheck: {
+          ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+        },
+      }),
+  });
+
+  const persistor = persistStore(store);
+
+  return { store, persistor };
+};
+
+// Store instance types
+export type AppStore = ReturnType<typeof makeStore>["store"];
 export type RootState = ReturnType<AppStore["getState"]>;
 export type AppDispatch = AppStore["dispatch"];
-
