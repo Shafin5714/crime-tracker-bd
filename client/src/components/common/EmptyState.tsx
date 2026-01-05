@@ -9,10 +9,12 @@ interface EmptyStateProps {
   icon?: LucideIcon;
   title: string;
   description?: string;
-  action?: {
-    label: string;
-    onClick: () => void;
-  };
+  action?:
+    | {
+        label: string;
+        onClick: () => void;
+      }
+    | React.ReactNode;
   className?: string;
   children?: React.ReactNode;
 }
@@ -25,6 +27,13 @@ export function EmptyState({
   className,
   children,
 }: EmptyStateProps) {
+  // Check if action is a React element or an object with label/onClick
+  const isActionObject =
+    action &&
+    typeof action === "object" &&
+    "label" in action &&
+    "onClick" in action;
+
   return (
     <div
       className={cn(
@@ -41,11 +50,15 @@ export function EmptyState({
           {description}
         </p>
       )}
-      {action && (
-        <Button onClick={action.onClick} className="mt-6">
-          {action.label}
+      {action && isActionObject && (
+        <Button
+          onClick={(action as { label: string; onClick: () => void }).onClick}
+          className="mt-6"
+        >
+          {(action as { label: string; onClick: () => void }).label}
         </Button>
       )}
+      {action && !isActionObject && <div className="mt-6">{action}</div>}
       {children && <div className="mt-6">{children}</div>}
     </div>
   );
