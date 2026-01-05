@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import dynamic from "next/dynamic";
-import { Sidebar } from "@/components/dashboard/Sidebar";
+import { OverviewSidebar } from "@/components/dashboard/OverviewSidebar";
+import { RealTimeSidebar } from "@/components/dashboard/RealTimeSidebar";
 import { TopBar } from "@/components/dashboard/TopBar";
 import { MapFilterPills } from "@/components/dashboard/MapFilterPills";
 import { Loader2 } from "lucide-react";
@@ -26,8 +27,8 @@ export default function DashboardPage() {
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-background">
-      {/* Sidebar */}
-      <Sidebar />
+      {/* Left Sidebar - Crime Overview */}
+      <OverviewSidebar />
 
       {/* Main Content Area */}
       <div className="flex flex-col flex-1 min-w-0">
@@ -35,19 +36,26 @@ export default function DashboardPage() {
         <TopBar />
 
         {/* Map Area */}
-        <div className="relative flex-1 bg-muted/10 w-full">
-          {/* Filter Pills Overlay */}
-          <MapFilterPills
-            filters={filters}
-            onFilterChange={setFilters}
-          />
+        <div className="relative flex-1 bg-muted/10 w-full flex">
 
-          {/* Map Component */}
-          <CrimeMap
-            showFilters={false}
-            className="w-full h-full"
-            filters={filters}
-          />
+          <div className="relative flex-1 h-full">
+             {/* Filter Pills Overlay */}
+            <MapFilterPills
+                filters={filters}
+                onFilterChange={setFilters}
+            />
+
+            {/* Map Component */}
+            <CrimeMap
+                showFilters={false}
+                className="w-full h-full"
+                filters={filters}
+            />
+          </div>
+
+         {/* Right Sidebar - Real-Time Data Streams */}
+         <RealTimeSidebar />
+
         </div>
       </div>
     </div>

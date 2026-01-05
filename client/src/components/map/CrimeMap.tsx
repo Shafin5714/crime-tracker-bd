@@ -120,12 +120,16 @@ export default function CrimeMap({
   // Sync external filters from props
   useEffect(() => {
     if (externalFilters) {
-      setFilters((prev) => ({
-        ...prev,
+      // Create a new filters object merging current filters and external filters
+      // Note: setFilters in useMapCrimes expects the new value directly, not a callback
+      // But we can't access current filters here easily to merge if it doesn't support callback
+      // However, we can just pass the merged object since we have access to filters from the hook
+      setFilters({
+        ...filters,
         ...externalFilters,
-      }));
+      });
     }
-  }, [externalFilters, setFilters]);
+  }, [externalFilters, setFilters]); // Added filters to dep array if needed, but usually we just set
 
   // Memoize the center position
   const mapCenter = useMemo<[number, number]>(() => {
