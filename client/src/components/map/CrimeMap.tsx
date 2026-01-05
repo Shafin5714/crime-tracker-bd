@@ -17,6 +17,7 @@ import MapMarker from "./MapMarker";
 import MapFilters from "./MapFilters";
 import { useMapCrimes } from "@/hooks/useMapCrimes";
 import { useGeolocation } from "@/hooks/useGeolocation";
+import { MOCK_CRIMES } from "@/data/mockData";
 import type { CrimeFilters, CrimeReport } from "@/types/api.types";
 
 // Default map center (Dhaka, Bangladesh)
@@ -28,6 +29,7 @@ interface CrimeMapProps {
   showFilters?: boolean;
   onCrimeSelect?: (crime: CrimeReport) => void;
   initialFilters?: Partial<CrimeFilters>;
+  filters?: Partial<CrimeFilters>;
 }
 
 // Component to handle map events and sync with bounds
@@ -94,6 +96,7 @@ export default function CrimeMap({
   showFilters = true,
   onCrimeSelect,
   initialFilters = {},
+  filters: externalFilters,
 }: CrimeMapProps) {
   const mapRef = useRef<LeafletMap | null>(null);
   const {
@@ -103,8 +106,26 @@ export default function CrimeMap({
     requestLocation,
   } = useGeolocation();
 
-  const { crimes, isLoading, error, filters, setFilters, setBounds, refetch } =
+  const { crimes: apiCrimes, isLoading, error, filters, setFilters, setBounds, refetch } =
     useMapCrimes(initialFilters);
+
+  // Use mock data if API returns empty (only in development)
+  const crimes =
+    apiCrimes && apiCrimes.length > 0
+      ? apiCrimes
+      : !isLoading && process.env.NODE_ENV === "development"
+      ? MOCK_CRIMES
+      : [];
+
+  // Sync external filters from props
+  useEffect(() => {
+    if (externalFilters) {
+      setFilters((prev) => ({
+        ...prev,
+        ...externalFilters,
+      }));
+    }
+  }, [externalFilters, setFilters]);
 
   // Memoize the center position
   const mapCenter = useMemo<[number, number]>(() => {
