@@ -6,6 +6,7 @@ import { Sidebar } from "@/components/dashboard/Sidebar";
 import { TopBar } from "@/components/dashboard/TopBar";
 import { MapFilterPills } from "@/components/dashboard/MapFilterPills";
 import { Loader2 } from "lucide-react";
+import type { CrimeFilters } from "@/types/api.types";
 
 // Dynamically import CrimeMap to avoid SSR issues with Leaflet
 const CrimeMap = dynamic(() => import("@/components/map/CrimeMap"), {
@@ -21,7 +22,7 @@ const CrimeMap = dynamic(() => import("@/components/map/CrimeMap"), {
 });
 
 export default function DashboardPage() {
-  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [filters, setFilters] = useState<Partial<CrimeFilters>>({});
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-background">
@@ -37,15 +38,15 @@ export default function DashboardPage() {
         <div className="relative flex-1 bg-muted/10 w-full">
           {/* Filter Pills Overlay */}
           <MapFilterPills
-            activeFilter={activeCategory}
-            onFilterChange={setActiveCategory}
+            filters={filters}
+            onFilterChange={setFilters}
           />
 
           {/* Map Component */}
           <CrimeMap
             showFilters={false}
             className="w-full h-full"
-            categoryFilter={activeCategory}
+            filters={filters}
           />
         </div>
       </div>
