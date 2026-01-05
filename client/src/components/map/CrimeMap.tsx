@@ -28,6 +28,7 @@ interface CrimeMapProps {
   showFilters?: boolean;
   onCrimeSelect?: (crime: CrimeReport) => void;
   initialFilters?: Partial<CrimeFilters>;
+  categoryFilter?: string | null;
 }
 
 // Component to handle map events and sync with bounds
@@ -94,6 +95,7 @@ export default function CrimeMap({
   showFilters = true,
   onCrimeSelect,
   initialFilters = {},
+  categoryFilter,
 }: CrimeMapProps) {
   const mapRef = useRef<LeafletMap | null>(null);
   const {
@@ -105,6 +107,17 @@ export default function CrimeMap({
 
   const { crimes, isLoading, error, filters, setFilters, setBounds, refetch } =
     useMapCrimes(initialFilters);
+
+  // Sync category filter from props
+  useEffect(() => {
+    if (categoryFilter !== undefined) {
+      setFilters({
+        ...filters,
+        crimeType: categoryFilter ? (categoryFilter as CrimeFilters['crimeType']) : undefined,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [categoryFilter]);
 
   // Memoize the center position
   const mapCenter = useMemo<[number, number]>(() => {
