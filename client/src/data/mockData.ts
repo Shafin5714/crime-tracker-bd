@@ -137,3 +137,42 @@ export const MOCK_CRIMES: CrimeReport[] = [
     denials: 1
   }
 ];
+
+export const MOCK_OVERVIEW_STATS = {
+  totalIncidents: 789,
+  totalIncidentsChange: 8.5,
+  highPriority: 112,
+  highPriorityChange: -1
+};
+
+export const MOCK_REGIONAL_DATA = [
+  { region: "Mirpur", count: 189, change: 2 },
+  { region: "Gulshan", count: 120, change: -1 },
+  { region: "Dhanmondi", count: 95, change: 3 },
+  { region: "Uttara", count: 78, change: -1 }
+];
+
+export const MOCK_TYPE_DISTRIBUTION = [
+  { type: "Theft", percentage: 28 },
+  { type: "Assault", percentage: 19 },
+  { type: "Vandalism", percentage: 15 }
+];
+
+export const MOCK_ALERTS = [
+  {
+    id: "alert-1",
+    title: "Active Robbery Situation",
+    location: "Mirpur 10 - Police Dispatched",
+    time: "2 mins ago",
+    severity: "Urgent",
+    type: "critical"
+  },
+  {
+    id: "alert-2",
+    title: "Stolen Vehicle Tracking",
+    location: "Gulshan 2 - Last Known Location",
+    time: "15 mins ago",
+    severity: "High",
+    type: "warning"
+  }
+];
