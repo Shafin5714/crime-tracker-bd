@@ -2,7 +2,14 @@
 // Hooks - Barrel export
 // ============================================================================
 
-export { useAuth, useCurrentUser, useLogin, useRegister, useLogout, authKeys } from "./useAuth";
+export {
+  useAuth,
+  useCurrentUser,
+  useLogin,
+  useRegister,
+  useLogout,
+  authKeys,
+} from "./useAuth";
 export {
   useCrimes,
   useCrime,
@@ -22,7 +29,13 @@ export {
   useUnbanUser,
   userKeys,
 } from "./useUsers";
+export { useMapCrimes } from "./useMapCrimes";
+export { useGeolocation } from "./useGeolocation";
 
 // Re-export auth utilities for convenience
-export { hasPermission, roleHierarchy, getRoleLabel, getAssignableRoles } from "@/lib/auth";
-
+export {
+  hasPermission,
+  roleHierarchy,
+  getRoleLabel,
+  getAssignableRoles,
+} from "@/lib/auth";

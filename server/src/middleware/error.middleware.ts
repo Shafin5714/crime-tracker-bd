@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import { ZodError } from "zod";
 import { AppError, ValidationError } from "../utils/errors";
 
 export const errorHandler = (
@@ -7,12 +8,27 @@ export const errorHandler = (
   res: Response,
   _next: NextFunction
 ) => {
-  // Log error in development
+  // Log error in development (safely, without circular reference issues)
   if (process.env.NODE_ENV === "development") {
-    console.error("Error:", err);
+    console.error("Error:", {
+      name: err.name,
+      message: err.message,
+      stack: err.stack,
+    });
   }
 
-  // Handle validation errors
+  // Handle Zod validation errors
+  if (err instanceof ZodError) {
+    return res.status(400).json({
+      error: "Validation failed",
+      errors: err.errors.map((e) => ({
+        path: e.path.join("."),
+        message: e.message,
+      })),
+    });
+  }
+
+  // Handle custom validation errors
   if (err instanceof ValidationError) {
     return res.status(err.statusCode).json({
       error: err.message,

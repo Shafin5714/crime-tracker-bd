@@ -1,5 +1,93 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "leaflet/dist/leaflet.css";
+
+/* ============================================================================
+   Leaflet Map Styles
+   ============================================================================ */
+
+/* Remove default marker icon background */
+.leaflet-default-icon-path {
+  background-image: none;
+}
+
+/* Custom crime marker styling */
+.custom-crime-marker {
+  background: transparent;
+  border: none;
+}
+
+/* Custom cluster icon styling */
+.custom-cluster-icon {
+  background: transparent;
+  border: none;
+}
+
+/* Leaflet popup styling to match our design system */
+.leaflet-popup-content-wrapper {
+  background: hsl(var(--card));
+  color: hsl(var(--card-foreground));
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  border: 1px solid hsl(var(--border));
+}
+
+.leaflet-popup-content {
+  margin: 0.75rem;
+  font-size: 0.875rem;
+}
+
+.leaflet-popup-tip {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-top: none;
+  border-left: none;
+}
+
+/* Leaflet container styling */
+.leaflet-container {
+  font-family: inherit;
+  background: hsl(var(--background));
+}
+
+/* Zoom controls styling */
+.leaflet-control-zoom {
+  border: 1px solid hsl(var(--border)) !important;
+  border-radius: 0.5rem !important;
+  overflow: hidden;
+}
+
+.leaflet-control-zoom a {
+  background: hsl(var(--card)) !important;
+  color: hsl(var(--foreground)) !important;
+  border-bottom: 1px solid hsl(var(--border)) !important;
+}
+
+.leaflet-control-zoom a:hover {
+  background: hsl(var(--accent)) !important;
+}
+
+.leaflet-control-zoom-out {
+  border-bottom: none !important;
+}
+
+/* Attribution styling */
+.leaflet-control-attribution {
+  background: hsl(var(--card) / 0.8) !important;
+  color: hsl(var(--muted-foreground)) !important;
+  font-size: 0.625rem;
+  padding: 0.125rem 0.375rem;
+}
+
+.leaflet-control-attribution a {
+  color: hsl(var(--primary)) !important;
+}
+
+/* Location picker marker */
+.custom-location-marker {
+  background: transparent;
+  border: none;
+}
 
 @custom-variant dark (&:is(.dark *));
 
