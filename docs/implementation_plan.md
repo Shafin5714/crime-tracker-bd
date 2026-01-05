@@ -767,21 +767,21 @@ export const useAuth = () => {
 ### 4.12 Deliverables
 
 - [x] Complete authentication UI
-- [ ] Reusable UI component library (shadcn/ui)
-- [ ] Layout system (Public, Auth, Admin layouts)
-- [ ] Error boundaries and toast notifications
-- [ ] Crime report submission form
-- [ ] Responsive layout (mobile-first)
-- [ ] Loading states (spinners & skeletons)
-- [ ] Form validation with React Hook Form + Zod
-- [ ] Axios client with auth interceptors
-- [ ] TanStack Query hooks for all API endpoints
-- [ ] API service modules (auth, crimes, users)
-- [ ] Type-safe API request/response definitions
-- [ ] Redux store with auth, UI, and map slices
-- [ ] Private route and role-based protection
-- [ ] 404, 403, and error pages
-- [ ] Internationalization (en/bn locales)
+- [x] Reusable UI component library (shadcn/ui)
+- [x] Layout system (Public, Auth, Admin layouts)
+- [x] Error boundaries and toast notifications
+- [x] Crime report submission form
+- [x] Responsive layout (mobile-first)
+- [x] Loading states (spinners & skeletons)
+- [x] Form validation with React Hook Form + Zod
+- [x] Axios client with auth interceptors
+- [x] TanStack Query hooks for all API endpoints
+- [x] API service modules (auth, crimes, users)
+- [x] Type-safe API request/response definitions
+- [x] Redux store with auth, UI, and map slices
+- [x] Private route and role-based protection
+- [x] 404, 403, and error pages
+- [x] Internationalization (en/bn locales)
 
 ---
 
