@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,6 +27,9 @@ import {
   User,
   Settings,
   LayoutDashboard,
+  Search,
+  Bell,
+  Loader2,
 } from "lucide-react";
 
 interface HeaderProps {
@@ -37,12 +41,19 @@ interface HeaderProps {
     avatar?: string;
   } | null;
   onLogout?: () => void;
+  logoutPending?: boolean;
   onMenuClick?: () => void;
   className?: string;
 }
 
 const navigation = [
-  { name: "Map", href: "/", icon: MapPin },
+  {
+    name: "Dashboard",
+    href: "/admin",
+    icon: LayoutDashboard,
+    requiresAdmin: true,
+  },
+  { name: "Map", href: "/", icon: MapPin, active: true },
   { name: "Report Crime", href: "/report", icon: FileWarning },
 ];
 
@@ -62,97 +73,127 @@ function getInitials(name: string): string {
     .slice(0, 2);
 }
 
-export function Header({ user, onLogout, onMenuClick, className }: HeaderProps) {
+export function Header({
+  user,
+  onLogout,
+  logoutPending = false,
+  onMenuClick,
+  className,
+}: HeaderProps) {
   const pathname = usePathname();
+
+  // Filter navigation items based on user role
+  const filteredNavigation = navigation.filter((item) => {
+    if (item.requiresAdmin) {
+      return user?.role === "ADMIN" || user?.role === "SUPER_ADMIN";
+    }
+    return true;
+  });
 
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
+        "h-16 border-b bg-background flex items-center justify-between px-4 z-30 shadow-sm",
         className
       )}
     >
-      <div className="container flex h-16 items-center justify-between px-4">
-        {/* Left: Logo & Navigation */}
-        <div className="flex items-center gap-6">
-          {/* Mobile Menu Button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="md:hidden"
-            onClick={onMenuClick}
-            aria-label="Open menu"
-          >
-            <Menu className="size-5" />
-          </Button>
+      {/* Logo Area */}
+      <div className="flex items-center gap-4">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="md:hidden"
+          onClick={onMenuClick}
+          aria-label="Open menu"
+        >
+          <Menu className="h-5 w-5" />
+        </Button>
+        <Link href="/" className="flex items-center gap-2">
+          <div className="h-8 w-8 bg-primary rounded-lg flex items-center justify-center">
+            <Shield className="h-5 w-5 text-primary-foreground" />
+          </div>
+          <span className="font-bold text-lg tracking-tight hidden md:inline-block">
+            Crime Tracker BD
+          </span>
+        </Link>
+      </div>
 
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2">
-            <div className="flex size-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <Shield className="size-5" />
-            </div>
-            <span className="hidden font-bold tracking-tight sm:inline-block">
-              Crime Tracker BD
-            </span>
-          </Link>
-
-          {/* Desktop Navigation */}
-          <nav className="hidden items-center gap-1 md:flex">
-            {navigation.map((item) => {
-              const isActive = pathname === item.href;
-              const Icon = item.icon;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cn(
-                    "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground",
-                    isActive
-                      ? "bg-accent text-accent-foreground"
-                      : "text-muted-foreground"
-                  )}
-                >
-                  <Icon className="size-4" />
-                  {item.name}
-                </Link>
-              );
-            })}
-          </nav>
+      {/* Search Bar */}
+      <div className="flex-1 max-w-md mx-4 hidden sm:block">
+        <div className="relative">
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            type="search"
+            placeholder="Search discussions or reports..."
+            className="w-full pl-9 bg-muted/50 focus-visible:bg-background transition-colors"
+          />
         </div>
+      </div>
 
-        {/* Right: User Section */}
-        <div className="flex items-center gap-3">
+      {/* Navigation & Profile */}
+      <div className="flex items-center gap-2 md:gap-4">
+        <nav className="hidden md:flex items-center gap-1">
+          {filteredNavigation.map((item) => {
+            const isActive = pathname === item.href;
+            return (
+              <Button
+                key={item.href}
+                variant={isActive ? "secondary" : "ghost"}
+                size="sm"
+                className={cn(
+                  isActive
+                    ? "bg-primary/10 text-primary hover:bg-primary/20"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+                asChild
+              >
+                <Link href={item.href}>{item.name}</Link>
+              </Button>
+            );
+          })}
+        </nav>
+
+        <div className="flex items-center gap-2 pl-2 border-l">
+          {/* Notifications */}
+          {user && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="relative text-muted-foreground"
+            >
+              <Bell className="h-5 w-5" />
+              <span className="absolute top-2 right-2 h-2 w-2 bg-red-500 rounded-full border-2 border-background" />
+            </Button>
+          )}
+
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
-                  className="relative flex items-center gap-2 px-2"
+                  className="relative h-9 w-9 rounded-full"
                 >
-                  <Avatar className="size-8">
+                  <Avatar className="h-9 w-9">
                     <AvatarImage src={user.avatar} alt={user.name} />
-                    <AvatarFallback className="text-xs">
-                      {getInitials(user.name)}
-                    </AvatarFallback>
+                    <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
                   </Avatar>
-                  <div className="hidden flex-col items-start text-left md:flex">
-                    <span className="text-sm font-medium">{user.name}</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56" align="end" forceMount>
+                <DropdownMenuLabel className="font-normal">
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium leading-none">
+                      {user.name}
+                    </p>
+                    <p className="text-xs leading-none text-muted-foreground">
+                      {user.email}
+                    </p>
                     <Badge
                       variant={roleColors[user.role]}
-                      className="h-4 px-1.5 text-[10px]"
+                      className="mt-1 w-fit h-4 px-1.5 text-[10px]"
                     >
                       {user.role}
                     </Badge>
-                  </div>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuLabel className="font-normal">
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium">{user.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {user.email}
-                    </p>
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
@@ -182,10 +223,15 @@ export function Header({ user, onLogout, onMenuClick, className }: HeaderProps) 
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={onLogout}
-                  className="cursor-pointer text-destructive focus:text-destructive"
+                  disabled={logoutPending}
+                  className="cursor-pointer text-red-600 focus:text-red-600"
                 >
-                  <LogOut className="mr-2 size-4" />
-                  Log out
+                  {logoutPending ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <LogOut className="mr-2 h-4 w-4" />
+                  )}
+                  {logoutPending ? "Logging out..." : "Log out"}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

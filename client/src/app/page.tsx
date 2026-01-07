@@ -4,10 +4,12 @@ import { useState } from "react";
 import dynamic from "next/dynamic";
 import { OverviewSidebar } from "@/components/dashboard/OverviewSidebar";
 import { RealTimeSidebar } from "@/components/dashboard/RealTimeSidebar";
-import { TopBar } from "@/components/dashboard/TopBar";
+import { Header } from "@/components/layout/Header";
+import { MobileNav } from "@/components/layout/MobileNav";
 import { MapFilterPills } from "@/components/dashboard/MapFilterPills";
 import { Loader2 } from "lucide-react";
 import type { CrimeFilters } from "@/types/api.types";
+import { useAuth } from "@/hooks/useAuth";
 
 // Dynamically import CrimeMap to avoid SSR issues with Leaflet
 const CrimeMap = dynamic(() => import("@/components/map/CrimeMap"), {
@@ -26,11 +28,40 @@ export default function DashboardPage() {
   const [filters, setFilters] = useState<Partial<CrimeFilters>>({});
   const [isLeftSidebarOpen, setLeftSidebarOpen] = useState(true);
   const [isRightSidebarOpen, setRightSidebarOpen] = useState(true);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+
+  const { user, logout, logoutStatus, isAuthenticated } = useAuth();
+
+  // Format user for Header/MobileNav components
+  const formattedUser =
+    isAuthenticated && user
+      ? {
+          id: user.id,
+          name: user.name ?? "User",
+          email: user.email,
+          role: user.role as "USER" | "MODERATOR" | "ADMIN" | "SUPER_ADMIN",
+        }
+      : null;
+
+  const handleLogout = () => {
+    logout();
+  };
 
   return (
     <div className="flex flex-col h-screen w-full overflow-hidden bg-background">
-      {/* Top Navigation - Full Width */}
-      <TopBar />
+      {/* Unified Header - Full Width */}
+      <Header
+        user={formattedUser}
+        onLogout={handleLogout}
+        logoutPending={logoutStatus.isPending}
+        onMenuClick={() => setMobileNavOpen(true)}
+      />
+      <MobileNav
+        open={mobileNavOpen}
+        onOpenChange={setMobileNavOpen}
+        user={formattedUser}
+        onLogout={handleLogout}
+      />
 
       {/* Main Content Area */}
       <div className="flex flex-1 overflow-hidden relative">
@@ -42,20 +73,17 @@ export default function DashboardPage() {
 
         {/* Map Area (Center) */}
         <div className="relative flex-1 bg-muted/10 flex flex-col min-w-0">
-            <div className="relative flex-1 h-full w-full">
-               {/* Filter Pills Overlay */}
-              <MapFilterPills
-                  filters={filters}
-                  onFilterChange={setFilters}
-              />
+          <div className="relative flex-1 h-full w-full">
+            {/* Filter Pills Overlay */}
+            <MapFilterPills filters={filters} onFilterChange={setFilters} />
 
-              {/* Map Component */}
-              <CrimeMap
-                  showFilters={false}
-                  className="w-full h-full"
-                  filters={filters}
-              />
-            </div>
+            {/* Map Component */}
+            <CrimeMap
+              showFilters={false}
+              className="w-full h-full"
+              filters={filters}
+            />
+          </div>
         </div>
 
         {/* Right Sidebar - Real-Time Data Streams */}

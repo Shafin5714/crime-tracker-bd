@@ -5,11 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import {
   Shield,
   MapPin,
@@ -21,7 +17,6 @@ import {
   Settings,
   LayoutDashboard,
   X,
-  Home,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -46,9 +41,13 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { name: "Home", href: "/", icon: Home },
-  { name: "Crime Map", href: "/map", icon: MapPin },
-  { name: "Report Crime", href: "/report", icon: FileWarning, requiresAuth: true },
+  { name: "Map", href: "/", icon: MapPin },
+  {
+    name: "Report Crime",
+    href: "/report",
+    icon: FileWarning,
+    requiresAuth: true,
+  },
   { name: "Profile", href: "/profile", icon: User, requiresAuth: true },
   { name: "Settings", href: "/settings", icon: Settings, requiresAuth: true },
   {
@@ -60,7 +59,12 @@ const navItems: NavItem[] = [
   },
 ];
 
-export function MobileNav({ open, onOpenChange, user, onLogout }: MobileNavProps) {
+export function MobileNav({
+  open,
+  onOpenChange,
+  user,
+  onLogout,
+}: MobileNavProps) {
   const pathname = usePathname();
 
   const filteredItems = navItems.filter((item) => {
@@ -77,7 +81,7 @@ export function MobileNav({ open, onOpenChange, user, onLogout }: MobileNavProps
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="fixed inset-y-0 left-0 h-full w-72 max-w-full rounded-none border-r p-0 data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left">
         <DialogTitle className="sr-only">Navigation Menu</DialogTitle>
-        
+
         {/* Header */}
         <div className="flex h-16 items-center justify-between border-b px-4">
           <Link

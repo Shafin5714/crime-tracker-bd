@@ -12,7 +12,7 @@ export default function PublicLayout({
   children: React.ReactNode;
 }) {
   const [mobileNavOpen, setMobileNavOpen] = React.useState(false);
-  const { user, logout, isAuthenticated } = useAuth();
+  const { user, logout, logoutStatus, isAuthenticated } = useAuth();
 
   // Format user for Header/MobileNav components
   const formattedUser =
@@ -34,6 +34,7 @@ export default function PublicLayout({
       <Header
         user={formattedUser}
         onLogout={handleLogout}
+        logoutPending={logoutStatus.isPending}
         onMenuClick={() => setMobileNavOpen(true)}
       />
       <MobileNav
