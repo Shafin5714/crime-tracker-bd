@@ -33,8 +33,15 @@ export const userService = {
   ): Promise<PaginatedResponse<UserListItem>> {
     const queryString = buildQueryString(filters as Record<string, unknown>);
     const url = queryString ? `${USERS_BASE}?${queryString}` : USERS_BASE;
-    const response = await apiClient.get<PaginatedResponse<UserListItem>>(url);
-    return response.data;
+    const response = await apiClient.get<{
+      users: UserListItem[];
+      pagination: PaginatedResponse<UserListItem>["pagination"];
+    }>(url);
+    // Map backend response (users) to frontend expected format (data)
+    return {
+      data: response.data.users,
+      pagination: response.data.pagination,
+    };
   },
 
   /**

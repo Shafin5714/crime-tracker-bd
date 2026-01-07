@@ -783,6 +783,82 @@ export const useAuth = () => {
 - [x] 404, 403, and error pages
 - [x] Internationalization (en/bn locales)
 
+### 4.13 Admin Panel & RBAC Expansion
+
+#### RBAC Permissions Matrix
+
+| Action                   | USER | MODERATOR | ADMIN | SUPER_ADMIN |
+| ------------------------ | ---- | --------- | ----- | ----------- |
+| **Reports**              |
+| Submit report            | ✅   | ✅        | ✅    | ✅          |
+| View all reports         | ❌   | ✅        | ✅    | ✅          |
+| Verify/Reject report     | ❌   | ✅        | ✅    | ✅          |
+| Delete report            | ❌   | ❌        | ✅    | ✅          |
+| **Users**                |
+| View user list           | ❌   | ❌        | ✅    | ✅          |
+| Ban USER                 | ❌   | ❌        | ✅    | ✅          |
+| Ban MODERATOR            | ❌   | ❌        | ❌    | ✅          |
+| Unban users              | ❌   | ❌        | ✅    | ✅          |
+| Change role to USER      | ❌   | ❌        | ❌    | ✅          |
+| Change role to MODERATOR | ❌   | ❌        | ❌    | ✅          |
+| Change role to ADMIN     | ❌   | ❌        | ❌    | ✅          |
+| **System**               |
+| View dashboard           | ❌   | ❌        | ✅    | ✅          |
+| View audit logs          | ❌   | ❌        | ❌    | ✅          |
+| Export audit logs (CSV)  | ❌   | ❌        | ❌    | ✅          |
+| Modify system settings   | ❌   | ❌        | ❌    | ✅          |
+
+#### Audit Logging System
+
+| Task                   | Description                                      | Priority |
+| ---------------------- | ------------------------------------------------ | -------- |
+| AuditLog Prisma model  | Store action, actor, target, metadata, IP        | P1       |
+| Audit log service      | `createAuditLog`, `getAuditLogs` functions       | P1       |
+| Audit log API          | `GET /api/audit-logs` (SUPER_ADMIN only)         | P1       |
+| IP address tracking    | Capture IP from request headers                  | P1       |
+| 7-day retention policy | Auto-cleanup logs older than 7 days              | P1       |
+| CSV export endpoint    | `GET /api/audit-logs/export` as CSV download     | P1       |
+| Frontend integration   | Replace mock logs in `/superadmin` with real API | P1       |
+
+```prisma
+model AuditLog {
+  id         String      @id @default(uuid())
+  actorId    String
+  actor      User        @relation("AuditActor", fields: [actorId], references: [id])
+  action     AuditAction
+  targetType String      // 'USER', 'CRIME_REPORT', 'SETTINGS'
+  targetId   String?
+  metadata   Json?       // { oldValue, newValue, reason }
+  ipAddress  String?
+  createdAt  DateTime    @default(now())
+
+  @@index([actorId])
+  @@index([action])
+  @@index([createdAt])
+}
+
+enum AuditAction {
+  USER_ROLE_CHANGED
+  USER_BANNED
+  USER_UNBANNED
+  REPORT_VERIFIED
+  REPORT_REJECTED
+  REPORT_DELETED
+  SETTINGS_CHANGED
+}
+```
+
+#### Enhanced Admin Pages
+
+| Page          | Enhancement                                 | Priority |
+| ------------- | ------------------------------------------- | -------- |
+| `/admin`      | Real user stats from `GET /api/users/stats` | P1       |
+| `/admin`      | Filter by role, status (Active/Banned)      | P1       |
+| `/superadmin` | Real audit logs with date/action filters    | P1       |
+| `/superadmin` | CSV export button for audit logs            | P1       |
+| `/moderate`   | Batch verify/reject multiple reports        | P2       |
+| `/dashboard`  | Real-time stats with Recharts integration   | P2       |
+
 ---
 
 ## 5. Phase 4: Map & Visualization

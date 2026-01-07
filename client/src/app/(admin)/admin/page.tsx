@@ -203,7 +203,7 @@ function AdminContent() {
                 <Skeleton key={i} className="h-16 w-full" />
               ))}
             </div>
-          ) : !data?.data.length ? (
+          ) : !data?.data?.length ? (
             <EmptyState
               icon={Users}
               title="No users found"
