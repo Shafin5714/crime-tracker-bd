@@ -2,12 +2,11 @@ import { CrimeType, Severity } from "@/types/api.types";
 import { renderToStaticMarkup } from "react-dom/server";
 import {
   AlertTriangle,
-  Car,
+  CarFront, // Better than generic Car
   CircleDollarSign,
-  Gavel,
-  Hand,
+  Swords, // For Assault
+  Wallet, // For Theft
   HelpCircle,
-  Home,
   ShieldAlert,
   Skull,
   LucideIcon,
@@ -15,9 +14,17 @@ import {
   HeartCrack,
   UserMinus,
   FileWarning,
-  Laptop2,
-  Pill,
+  MonitorX, // For Cybercrime (if available) or Laptop2
+  Syringe, // For Drugs (if available) or Pill
   MessageSquareWarning,
+  Footprints, // For Burglary
+  Flame, // For Arson (if added later) or generic danger
+  Search, // Investigating
+  LockKeyhole, // Sexual Assault (Violation)
+  Banknote, // Robbery alternative
+  Megaphone, // Harassment
+  Fingerprint, // Fraud
+  DoorOpen, // Burglary
 } from "lucide-react";
 
 // Severity color mapping - using gradients for premium feel
@@ -31,22 +38,22 @@ export const SEVERITY_COLORS: Record<
   CRITICAL: { primary: "#ef4444", light: "#f87171", dark: "#dc2626" }, // red
 };
 
-// Crime Type to Icon mapping
+// Crime Type to Icon mapping - REFINED SELECTION
 const CRIME_ICONS: Record<CrimeType, LucideIcon> = {
-  [CrimeType.THEFT]: Hand,
-  [CrimeType.ROBBERY]: CircleDollarSign,
-  [CrimeType.ASSAULT]: Gavel,
-  [CrimeType.MURDER]: Skull,
-  [CrimeType.KIDNAPPING]: UserMinus,
-  [CrimeType.FRAUD]: FileWarning,
-  [CrimeType.CYBERCRIME]: Laptop2,
-  [CrimeType.DRUG_RELATED]: Pill,
-  [CrimeType.VANDALISM]: SprayCan,
-  [CrimeType.HARASSMENT]: MessageSquareWarning,
-  [CrimeType.DOMESTIC_VIOLENCE]: HeartCrack,
-  [CrimeType.SEXUAL_ASSAULT]: ShieldAlert,
-  [CrimeType.BURGLARY]: Home,
-  [CrimeType.VEHICLE_THEFT]: Car,
+  [CrimeType.THEFT]: Wallet, // Specific to theft
+  [CrimeType.ROBBERY]: Banknote, // Use Banknote for robbery
+  [CrimeType.ASSAULT]: Swords, // Conflict/Physical
+  [CrimeType.MURDER]: Skull, // Standard
+  [CrimeType.KIDNAPPING]: UserMinus, // Standard
+  [CrimeType.FRAUD]: Fingerprint, // Identity/Fraud
+  [CrimeType.CYBERCRIME]: MonitorX, // Cyber
+  [CrimeType.DRUG_RELATED]: Syringe, // Specific to drugs
+  [CrimeType.VANDALISM]: SprayCan, // Graffiti/Damage
+  [CrimeType.HARASSMENT]: Megaphone, // Verbal/Public
+  [CrimeType.DOMESTIC_VIOLENCE]: HeartCrack, // Broken home/heart
+  [CrimeType.SEXUAL_ASSAULT]: LockKeyhole, // Violation of privacy/safety
+  [CrimeType.BURGLARY]: DoorOpen, // Breaking and entering
+  [CrimeType.VEHICLE_THEFT]: CarFront, // Specific vehicle
   [CrimeType.OTHER]: HelpCircle,
 };
 
