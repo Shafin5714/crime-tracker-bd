@@ -69,7 +69,7 @@ export default function CrimePopup({ crime }: CrimePopupProps) {
   const crimeTypeLabel = CRIME_TYPE_LABELS[crime.crimeType] || crime.crimeType;
 
   return (
-    <div className="min-w-[220px] max-w-[280px] p-1">
+    <div className="min-w-[220px] max-w-[280px] p-4 bg-card text-card-foreground">
       {/* Header */}
       <div className="flex items-start justify-between gap-2 mb-2">
         <h3 className="font-semibold text-sm leading-tight">

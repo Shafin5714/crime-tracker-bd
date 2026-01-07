@@ -67,7 +67,12 @@ export default function MapMarker({ crime, onClick }: MapMarkerProps) {
         click: onClick,
       }}
     >
-      <Popup maxWidth={300} minWidth={250}>
+      <Popup
+        maxWidth={300}
+        minWidth={250}
+        className="crime-popup"
+        closeButton={true}
+      >
         <CrimePopup crime={crime} />
       </Popup>
     </Marker>
