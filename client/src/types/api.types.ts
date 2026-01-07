@@ -36,11 +36,11 @@ export enum Severity {
 }
 
 export enum ReportStatus {
-  PENDING = "PENDING",
+  UNVERIFIED = "UNVERIFIED",
   VERIFIED = "VERIFIED",
   DISPUTED = "DISPUTED",
-  REJECTED = "REJECTED",
   HIDDEN = "HIDDEN",
+  REMOVED = "REMOVED",
 }
 
 export enum ValidationType {

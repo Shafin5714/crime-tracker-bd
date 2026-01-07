@@ -51,7 +51,7 @@ const crimeTypeLabels: Record<CrimeType, string> = {
 function DashboardContent() {
   const { data: allReports, isLoading } = useCrimes({ limit: 100 });
   const { data: pendingReports } = useCrimes({
-    status: ReportStatus.PENDING,
+    status: ReportStatus.UNVERIFIED,
     limit: 5,
   });
 
@@ -80,8 +80,9 @@ function DashboardContent() {
       verified: allReports.data.filter(
         (r) => r.status === ReportStatus.VERIFIED
       ).length,
-      pending: allReports.data.filter((r) => r.status === ReportStatus.PENDING)
-        .length,
+      pending: allReports.data.filter(
+        (r) => r.status === ReportStatus.UNVERIFIED
+      ).length,
       critical: allReports.data.filter((r) => r.severity === Severity.CRITICAL)
         .length,
     };

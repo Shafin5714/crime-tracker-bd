@@ -82,9 +82,11 @@
       "CRITICAL": "Critical"
     },
     "statuses": {
-      "PENDING": "Pending",
+      "UNVERIFIED": "Unverified",
       "VERIFIED": "Verified",
-      "REJECTED": "Rejected"
+      "DISPUTED": "Disputed",
+      "HIDDEN": "Hidden",
+      "REMOVED": "Removed"
     }
   },
   "map": {

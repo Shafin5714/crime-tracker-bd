@@ -42,8 +42,8 @@ const severityColors: Record<Severity, string> = {
 };
 
 const statusLabels: Record<ReportStatus, { label: string; color: string }> = {
-  [ReportStatus.PENDING]: {
-    label: "Pending",
+  [ReportStatus.UNVERIFIED]: {
+    label: "Unverified",
     color: "bg-yellow-500/10 text-yellow-600",
   },
   [ReportStatus.VERIFIED]: {
@@ -54,13 +54,13 @@ const statusLabels: Record<ReportStatus, { label: string; color: string }> = {
     label: "Disputed",
     color: "bg-orange-500/10 text-orange-600",
   },
-  [ReportStatus.REJECTED]: {
-    label: "Rejected",
-    color: "bg-red-500/10 text-red-600",
-  },
   [ReportStatus.HIDDEN]: {
     label: "Hidden",
     color: "bg-gray-500/10 text-gray-600",
+  },
+  [ReportStatus.REMOVED]: {
+    label: "Removed",
+    color: "bg-red-500/10 text-red-600",
   },
 };
 

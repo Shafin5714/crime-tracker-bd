@@ -61,11 +61,11 @@ const severityColors: Record<Severity, string> = {
 };
 
 const statusColors: Record<ReportStatus, string> = {
-  [ReportStatus.PENDING]: "bg-yellow-500/10 text-yellow-600",
+  [ReportStatus.UNVERIFIED]: "bg-yellow-500/10 text-yellow-600",
   [ReportStatus.VERIFIED]: "bg-green-500/10 text-green-600",
   [ReportStatus.DISPUTED]: "bg-orange-500/10 text-orange-600",
-  [ReportStatus.REJECTED]: "bg-red-500/10 text-red-600",
   [ReportStatus.HIDDEN]: "bg-gray-500/10 text-gray-600",
+  [ReportStatus.REMOVED]: "bg-red-500/10 text-red-600",
 };
 
 export default function SearchPage() {
@@ -206,7 +206,9 @@ export default function SearchPage() {
                       }
                     >
                       <option value="">All Statuses</option>
-                      <option value={ReportStatus.PENDING}>Pending</option>
+                      <option value={ReportStatus.UNVERIFIED}>
+                        Unverified
+                      </option>
                       <option value={ReportStatus.VERIFIED}>Verified</option>
                       <option value={ReportStatus.DISPUTED}>Disputed</option>
                     </select>

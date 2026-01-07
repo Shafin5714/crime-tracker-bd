@@ -33,11 +33,14 @@ const STATUS_STYLES: Record<
   ReportStatus,
   { label: string; className: string }
 > = {
-  PENDING: { label: "Pending", className: "bg-yellow-100 text-yellow-800" },
+  UNVERIFIED: {
+    label: "Unverified",
+    className: "bg-yellow-100 text-yellow-800",
+  },
   VERIFIED: { label: "Verified", className: "bg-green-100 text-green-800" },
   DISPUTED: { label: "Disputed", className: "bg-orange-100 text-orange-800" },
-  REJECTED: { label: "Rejected", className: "bg-red-100 text-red-800" },
   HIDDEN: { label: "Hidden", className: "bg-gray-100 text-gray-800" },
+  REMOVED: { label: "Removed", className: "bg-red-100 text-red-800" },
 };
 
 // Crime type labels

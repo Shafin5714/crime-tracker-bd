@@ -45,10 +45,10 @@ const SEVERITY_OPTIONS: { value: Severity; label: string }[] = [
 
 // Status options
 const STATUS_OPTIONS: { value: ReportStatus; label: string }[] = [
-  { value: ReportStatus.PENDING, label: "Pending" },
+  { value: ReportStatus.UNVERIFIED, label: "Unverified" },
   { value: ReportStatus.VERIFIED, label: "Verified" },
   { value: ReportStatus.DISPUTED, label: "Disputed" },
-  { value: ReportStatus.REJECTED, label: "Rejected" },
+  { value: ReportStatus.HIDDEN, label: "Hidden" },
 ];
 
 interface MapFiltersProps {

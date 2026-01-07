@@ -82,9 +82,11 @@
       "CRITICAL": "জটিল"
     },
     "statuses": {
-      "PENDING": "অপেক্ষমান",
+      "UNVERIFIED": "অযাচাইকৃত",
       "VERIFIED": "যাচাইকৃত",
-      "REJECTED": "প্রত্যাখ্যাত"
+      "DISPUTED": "বিতর্কিত",
+      "HIDDEN": "লুকানো",
+      "REMOVED": "অপসারিত"
     }
   },
   "map": {

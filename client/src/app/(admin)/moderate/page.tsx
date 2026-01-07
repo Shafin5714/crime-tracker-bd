@@ -72,7 +72,7 @@ function ModerationContent() {
   const [filters, setFilters] = React.useState<CrimeFilters>({
     page: 1,
     limit: 10,
-    status: ReportStatus.PENDING,
+    status: ReportStatus.UNVERIFIED,
   });
   const [selectedReport, setSelectedReport] =
     React.useState<CrimeReport | null>(null);
@@ -189,8 +189,8 @@ function ModerationContent() {
                 <CardTitle>Reports Queue</CardTitle>
                 <Tabs value={filters.status} onValueChange={handleStatusFilter}>
                   <TabsList>
-                    <TabsTrigger value={ReportStatus.PENDING}>
-                      Pending
+                    <TabsTrigger value={ReportStatus.UNVERIFIED}>
+                      Unverified
                     </TabsTrigger>
                     <TabsTrigger value={ReportStatus.DISPUTED}>
                       Disputed
@@ -342,7 +342,7 @@ function ModerationContent() {
                     </p>
                   </div>
 
-                  {selectedReport.status === ReportStatus.PENDING && (
+                  {selectedReport.status === ReportStatus.UNVERIFIED && (
                     <div className="flex gap-2 pt-4 border-t">
                       <Button
                         className="flex-1"

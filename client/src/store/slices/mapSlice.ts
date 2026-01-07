@@ -14,7 +14,12 @@ export type CrimeType =
 
 export type Severity = "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
 
-export type CrimeStatus = "PENDING" | "VERIFIED" | "REJECTED";
+export type CrimeStatus =
+  | "UNVERIFIED"
+  | "VERIFIED"
+  | "DISPUTED"
+  | "HIDDEN"
+  | "REMOVED";
 
 export interface MapFilters {
   crimeTypes: CrimeType[];
@@ -112,7 +117,10 @@ const mapSlice = createSlice({
     setSelectedCrime: (state, action: PayloadAction<string | null>) => {
       state.selectedCrimeId = action.payload;
     },
-    setUserLocation: (state, action: PayloadAction<[number, number] | null>) => {
+    setUserLocation: (
+      state,
+      action: PayloadAction<[number, number] | null>
+    ) => {
       state.userLocation = action.payload;
       state.isLocating = false;
     },
