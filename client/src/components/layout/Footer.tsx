@@ -36,27 +36,25 @@ export function Footer({ className }: FooterProps) {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer
-      className={cn(
-        "border-t bg-muted/30",
-        className
-      )}
-    >
-      <div className="container px-4 py-12">
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+    <footer className={cn("border-t bg-muted/30", className)}>
+      <div className="container mx-auto px-4 py-12">
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4 text-center md:text-left">
           {/* Brand */}
           <div className="space-y-4">
-            <Link href="/" className="flex items-center gap-2">
+            <Link
+              href="/"
+              className="flex items-center justify-center md:justify-start gap-2"
+            >
               <div className="flex size-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                 <Shield className="size-5" />
               </div>
               <span className="font-bold tracking-tight">Crime Tracker BD</span>
             </Link>
-            <p className="text-sm text-muted-foreground max-w-xs">
+            <p className="text-sm text-muted-foreground max-w-xs mx-auto md:mx-0">
               Empowering Bangladesh with real-time crime data. Together we build
               safer communities through transparency and awareness.
             </p>
-            <div className="flex gap-3">
+            <div className="flex justify-center md:justify-start gap-3">
               {socialLinks.map((item) => {
                 const Icon = item.icon;
                 return (
@@ -126,9 +124,12 @@ export function Footer({ className }: FooterProps) {
             </ul>
           </div>
         </div>
+      </div>
 
-        {/* Bottom Bar */}
-        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t pt-8 md:flex-row">
+      <div className="border-t w-full" />
+
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex flex-col items-center justify-center gap-4 text-center">
           <p className="text-sm text-muted-foreground">
             © {currentYear} Crime Tracker BD. All rights reserved.
           </p>
