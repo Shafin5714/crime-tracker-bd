@@ -12,17 +12,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LogOut, Settings, User, Bell, Home } from "lucide-react";
+import { LogOut, Settings, User, Bell, Home, Loader2 } from "lucide-react";
 import Link from "next/link";
-
-// TODO: Replace with actual auth hook
-const mockUser = {
-  id: "1",
-  name: "Admin User",
-  email: "admin@crimetrackerbd.com",
-  role: "ADMIN" as const,
-  avatar: undefined,
-};
+import { useAuth } from "@/hooks/useAuth";
 
 export default function AdminLayout({
   children,
@@ -30,17 +22,19 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const [sidebarCollapsed, setSidebarCollapsed] = React.useState(false);
+  const { user, logout, logoutStatus, isLoading } = useAuth();
 
   const handleLogout = () => {
-    // TODO: Implement logout with auth hook
-    console.log("Logout");
+    logout();
   };
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">
       {/* Sidebar */}
       <Sidebar
-        userRole={mockUser.role}
+        userRole={
+          (user?.role ?? "ADMIN") as "MODERATOR" | "ADMIN" | "SUPER_ADMIN"
+        }
         isCollapsed={sidebarCollapsed}
         onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
       />
@@ -73,28 +67,33 @@ export default function AdminLayout({
             {/* User Menu */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="flex items-center gap-2 px-2">
+                <Button
+                  variant="ghost"
+                  className="flex items-center gap-2 px-2"
+                >
                   <Avatar className="size-8">
-                    <AvatarImage src={mockUser.avatar} alt={mockUser.name} />
+                    <AvatarImage src={undefined} alt={user?.name ?? "User"} />
                     <AvatarFallback className="text-xs">
-                      {mockUser.name
+                      {(user?.name ?? "U")
                         .split(" ")
-                        .map((n) => n[0])
+                        .map((n: string) => n[0])
                         .join("")
                         .slice(0, 2)}
                     </AvatarFallback>
                   </Avatar>
                   <span className="hidden text-sm font-medium md:inline-block">
-                    {mockUser.name}
+                    {user?.name ?? "User"}
                   </span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium">{mockUser.name}</p>
+                    <p className="text-sm font-medium">
+                      {user?.name ?? "User"}
+                    </p>
                     <p className="text-xs text-muted-foreground">
-                      {mockUser.email}
+                      {user?.email ?? ""}
                     </p>
                   </div>
                 </DropdownMenuLabel>
@@ -114,10 +113,15 @@ export default function AdminLayout({
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={handleLogout}
+                  disabled={logoutStatus.isPending}
                   className="cursor-pointer text-destructive focus:text-destructive"
                 >
-                  <LogOut className="mr-2 size-4" />
-                  Log out
+                  {logoutStatus.isPending ? (
+                    <Loader2 className="mr-2 size-4 animate-spin" />
+                  ) : (
+                    <LogOut className="mr-2 size-4" />
+                  )}
+                  {logoutStatus.isPending ? "Logging out..." : "Log out"}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
