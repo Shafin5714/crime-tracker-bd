@@ -106,8 +106,15 @@ export default function CrimeMap({
     requestLocation,
   } = useGeolocation();
 
-  const { crimes: apiCrimes, isLoading, error, filters, setFilters, setBounds, refetch } =
-    useMapCrimes(initialFilters);
+  const {
+    crimes: apiCrimes,
+    isLoading,
+    error,
+    filters,
+    setFilters,
+    setBounds,
+    refetch,
+  } = useMapCrimes(initialFilters);
 
   // Use mock data if API returns empty (only in development)
   const crimes =
@@ -120,16 +127,25 @@ export default function CrimeMap({
   // Sync external filters from props
   useEffect(() => {
     if (externalFilters) {
-      // Create a new filters object merging current filters and external filters
-      // Note: setFilters in useMapCrimes expects the new value directly, not a callback
-      // But we can't access current filters here easily to merge if it doesn't support callback
-      // However, we can just pass the merged object since we have access to filters from the hook
-      setFilters({
-        ...filters,
-        ...externalFilters,
+      setFilters((prev: Partial<CrimeFilters>) => {
+        // Only update if externalFilters actually change something in there
+        // This is a shallow merge, but enough to trigger a loop if not careful
+        const nextFilters = {
+          ...prev,
+          ...externalFilters,
+        };
+
+        // If they are exactly the same (shallowly), return previous state to avoid re-render
+        const hasChanged = Object.keys(externalFilters).some(
+          (key) =>
+            externalFilters[key as keyof CrimeFilters] !==
+            prev[key as keyof CrimeFilters]
+        );
+
+        return hasChanged ? nextFilters : prev;
       });
     }
-  }, [externalFilters, setFilters]); // Added filters to dep array if needed, but usually we just set
+  }, [externalFilters, setFilters]);
 
   // Memoize the center position
   const mapCenter = useMemo<[number, number]>(() => {
@@ -197,7 +213,7 @@ export default function CrimeMap({
 
       {/* Filter Panel */}
       {showFilters && (
-        <div className="absolute top-4 left-4 z-[1000] max-w-xs">
+        <div className="absolute top-4 left-4 z-1000 max-w-xs">
           <MapFilters
             filters={filters}
             onFiltersChange={setFilters}
@@ -208,7 +224,7 @@ export default function CrimeMap({
       )}
 
       {/* Locate Me Button */}
-      <div className="absolute bottom-24 right-4 z-[1000]">
+      <div className="absolute bottom-24 right-4 z-1000">
         <Button
           variant="secondary"
           size="icon"
@@ -227,7 +243,7 @@ export default function CrimeMap({
 
       {/* Loading Overlay */}
       {isLoading && (
-        <div className="absolute top-4 right-4 z-[1000]">
+        <div className="absolute top-4 right-4 z-1000">
           <Card className="px-3 py-2 flex items-center gap-2 shadow-lg">
             <Loader2 className="h-4 w-4 animate-spin text-primary" />
             <span className="text-sm">Loading crimes...</span>
@@ -237,7 +253,7 @@ export default function CrimeMap({
 
       {/* Error Message */}
       {error && (
-        <div className="absolute top-4 right-4 z-[1000]">
+        <div className="absolute top-4 right-4 z-1000">
           <Card className="px-3 py-2 flex items-center gap-2 shadow-lg border-destructive">
             <AlertCircle className="h-4 w-4 text-destructive" />
             <span className="text-sm text-destructive">
@@ -249,7 +265,7 @@ export default function CrimeMap({
 
       {/* Geolocation Error */}
       {geoError && (
-        <div className="absolute bottom-36 right-4 z-[1000]">
+        <div className="absolute bottom-36 right-4 z-1000">
           <Card className="px-3 py-2 max-w-[200px] shadow-lg">
             <p className="text-xs text-muted-foreground">{geoError}</p>
           </Card>
@@ -257,7 +273,7 @@ export default function CrimeMap({
       )}
 
       {/* Stats Badge */}
-      <div className="absolute bottom-4 left-4 z-[1000]">
+      <div className="absolute bottom-4 left-4 z-1000">
         <Card className="px-3 py-2 flex items-center gap-2 shadow-lg">
           <MapPin className="h-4 w-4 text-primary" />
           <span className="text-sm font-medium">

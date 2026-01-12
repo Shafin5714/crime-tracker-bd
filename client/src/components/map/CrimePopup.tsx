@@ -4,14 +4,7 @@ import Link from "next/link";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  MapPin,
-  Calendar,
-  AlertTriangle,
-  ExternalLink,
-  User,
-  Shield,
-} from "lucide-react";
+import { MapPin, Calendar, ExternalLink, User, Shield } from "lucide-react";
 import type { CrimeReport, Severity, ReportStatus } from "@/types/api.types";
 
 // Severity styling

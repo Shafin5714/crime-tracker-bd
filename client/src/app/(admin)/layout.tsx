@@ -22,7 +22,7 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const [sidebarCollapsed, setSidebarCollapsed] = React.useState(false);
-  const { user, logout, logoutStatus, isLoading } = useAuth();
+  const { user, logout, logoutStatus } = useAuth();
 
   const handleLogout = () => {
     logout();

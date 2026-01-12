@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import L from "leaflet";
 import { MapPin, Crosshair } from "lucide-react";
@@ -67,20 +67,17 @@ export default function LocationPicker({
   onChange,
   className = "",
 }: LocationPickerProps) {
-  const [selectedPosition, setSelectedPosition] = useState<
+  const [internalPosition, setInternalPosition] = useState<
     [number, number] | null
   >(value ? [value.latitude, value.longitude] : null);
 
-  // Update internal state when value prop changes
-  useEffect(() => {
-    if (value) {
-      setSelectedPosition([value.latitude, value.longitude]);
-    }
-  }, [value]);
+  const selectedPosition = value
+    ? ([value.latitude, value.longitude] as [number, number])
+    : internalPosition;
 
   const handleLocationSelect = useCallback(
     (lat: number, lng: number) => {
-      setSelectedPosition([lat, lng]);
+      setInternalPosition([lat, lng]);
       onChange({ latitude: lat, longitude: lng });
     },
     [onChange]
@@ -91,7 +88,7 @@ export default function LocationPicker({
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
-          setSelectedPosition([latitude, longitude]);
+          setInternalPosition([latitude, longitude]);
           onChange({ latitude, longitude });
         },
         (error) => {
@@ -134,7 +131,7 @@ export default function LocationPicker({
       </MapContainer>
 
       {/* Instructions */}
-      <div className="absolute top-2 left-2 z-[1000]">
+      <div className="absolute top-2 left-2 z-1000">
         <Card className="px-3 py-2 shadow-lg">
           <div className="flex items-center gap-2 text-sm">
             <MapPin className="h-4 w-4 text-primary" />
@@ -144,7 +141,7 @@ export default function LocationPicker({
       </div>
 
       {/* Current Location Button */}
-      <div className="absolute bottom-2 right-2 z-[1000]">
+      <div className="absolute bottom-2 right-2 z-1000">
         <Button
           type="button"
           variant="secondary"
@@ -159,7 +156,7 @@ export default function LocationPicker({
 
       {/* Selected Coordinates Display */}
       {selectedPosition && (
-        <div className="absolute bottom-2 left-2 z-[1000]">
+        <div className="absolute bottom-2 left-2 z-1000">
           <Card className="px-3 py-2 shadow-lg">
             <div className="text-xs text-muted-foreground">
               <span className="font-medium">Lat:</span>{" "}

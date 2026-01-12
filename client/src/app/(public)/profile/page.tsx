@@ -17,8 +17,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   User,
   Mail,
-  Calendar,
-  Shield,
   FileWarning,
   Settings,
   Bell,
@@ -107,7 +105,7 @@ function ProfileContent() {
       <div className="container mx-auto max-w-4xl px-4">
         {/* Profile Header */}
         <Card className="mb-6 overflow-hidden">
-          <div className="h-24 bg-gradient-to-r from-primary to-primary/60" />
+          <div className="h-24 bg-linear-to-r from-primary to-primary/60" />
           <CardContent className="relative pb-6">
             <div className="flex flex-col sm:flex-row sm:items-end gap-4 -mt-12">
               <Avatar className="size-24 border-4 border-background shadow-lg">

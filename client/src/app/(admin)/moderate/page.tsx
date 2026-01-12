@@ -2,16 +2,10 @@
 
 import * as React from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   CheckCircle2,
   XCircle,
@@ -19,15 +13,8 @@ import {
   AlertTriangle,
   MapPin,
   Calendar,
-  User,
-  MessageSquare,
-  Filter,
-  Search,
-  ChevronLeft,
-  ChevronRight,
-  Eye,
 } from "lucide-react";
-import { Input } from "@/components/ui/input";
+
 import { PrivateRoute } from "@/components/auth";
 import { useCrimes, useValidateCrime } from "@/hooks/useCrimes";
 import { EmptyState } from "@/components/common/EmptyState";

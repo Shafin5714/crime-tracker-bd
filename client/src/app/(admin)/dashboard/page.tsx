@@ -16,15 +16,12 @@ import {
   CheckCircle2,
   Clock,
   AlertTriangle,
-  Users,
   TrendingUp,
-  MapPin,
   Calendar,
   BarChart3,
   PieChart,
   Activity,
   ArrowUpRight,
-  ArrowDownRight,
 } from "lucide-react";
 import { PrivateRoute } from "@/components/auth";
 import { useCrimes } from "@/hooks/useCrimes";
@@ -235,7 +232,7 @@ function DashboardContent() {
               </p>
             ) : (
               <div className="space-y-4">
-                {crimeDistribution.map((item, index) => (
+                {crimeDistribution.map((item) => (
                   <div key={item.type} className="space-y-1">
                     <div className="flex items-center justify-between text-sm">
                       <span>{item.type}</span>

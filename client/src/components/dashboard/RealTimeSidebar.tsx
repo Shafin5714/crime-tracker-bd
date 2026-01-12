@@ -10,7 +10,6 @@ import {
   Users,
   Eye,
   Clock,
-  MapPin,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
@@ -24,7 +23,7 @@ interface RealTimeSidebarProps {
 
 export function RealTimeSidebar({ isOpen, onToggle }: RealTimeSidebarProps) {
   return (
-    <div className="relative flex-shrink-0 z-20">
+    <div className="relative shrink-0 z-20">
       {/* Toggle Button - Outside aside to avoid being clipped */}
       <Button
         variant="secondary"

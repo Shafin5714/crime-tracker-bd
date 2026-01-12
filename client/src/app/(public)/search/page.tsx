@@ -25,7 +25,7 @@ import {
   Map,
 } from "lucide-react";
 import { useCrimes } from "@/hooks/useCrimes";
-import { LoadingSpinner } from "@/components/common/LoadingSpinner";
+
 import { EmptyState } from "@/components/common/EmptyState";
 import { Pagination } from "@/components/common/Pagination";
 import {

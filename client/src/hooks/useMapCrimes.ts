@@ -2,7 +2,7 @@
 // useMapCrimes Hook - Fetch crimes based on map bounds
 // ============================================================================
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, SetStateAction } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { crimeService } from "@/services/api";
 import type { CrimeFilters, CrimeReport } from "@/types/api.types";
@@ -19,7 +19,7 @@ interface UseMapCrimesResult {
   isLoading: boolean;
   error: Error | null;
   filters: Partial<CrimeFilters>;
-  setFilters: (filters: Partial<CrimeFilters>) => void;
+  setFilters: (filters: SetStateAction<Partial<CrimeFilters>>) => void;
   setBounds: (bounds: MapBounds) => void;
   refetch: () => void;
 }
@@ -58,9 +58,12 @@ export function useMapCrimes(
     refetchOnWindowFocus: false,
   });
 
-  const handleSetFilters = useCallback((newFilters: Partial<CrimeFilters>) => {
-    setFilters(newFilters);
-  }, []);
+  const handleSetFilters = useCallback(
+    (newFilters: SetStateAction<Partial<CrimeFilters>>) => {
+      setFilters(newFilters);
+    },
+    []
+  );
 
   const handleSetBounds = useCallback((newBounds: MapBounds) => {
     setBounds(newBounds);

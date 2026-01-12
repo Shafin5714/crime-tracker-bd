@@ -35,8 +35,6 @@ import {
   Shield,
   Ban,
   CheckCircle2,
-  Mail,
-  Calendar,
   FileWarning,
   Settings,
   UserCog,
@@ -48,13 +46,6 @@ import { EmptyState } from "@/components/common/EmptyState";
 import { RoleIndicator } from "@/components/common/RoleIndicator";
 import { showSuccess, showError } from "@/lib/toast";
 import { UserRole, type UserFilters } from "@/types/api.types";
-
-const roleColors: Record<UserRole, string> = {
-  [UserRole.USER]: "bg-gray-500/10 text-gray-600",
-  [UserRole.MODERATOR]: "bg-blue-500/10 text-blue-600",
-  [UserRole.ADMIN]: "bg-purple-500/10 text-purple-600",
-  [UserRole.SUPER_ADMIN]: "bg-red-500/10 text-red-600",
-};
 
 function AdminContent() {
   const [filters, setFilters] = React.useState<UserFilters>({

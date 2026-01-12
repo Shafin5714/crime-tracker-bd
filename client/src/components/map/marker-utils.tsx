@@ -3,23 +3,16 @@ import { renderToStaticMarkup } from "react-dom/server";
 import {
   AlertTriangle,
   CarFront, // Better than generic Car
-  CircleDollarSign,
   Swords, // For Assault
   Wallet, // For Theft
   HelpCircle,
-  ShieldAlert,
   Skull,
   LucideIcon,
   SprayCan,
   HeartCrack,
   UserMinus,
-  FileWarning,
   MonitorX, // For Cybercrime (if available) or Laptop2
   Syringe, // For Drugs (if available) or Pill
-  MessageSquareWarning,
-  Footprints, // For Burglary
-  Flame, // For Arson (if added later) or generic danger
-  Search, // Investigating
   LockKeyhole, // Sexual Assault (Violation)
   Banknote, // Robbery alternative
   Megaphone, // Harassment

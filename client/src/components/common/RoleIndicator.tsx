@@ -34,18 +34,17 @@ interface RoleIndicatorProps
 /**
  * Get the appropriate icon for each role
  */
-const getRoleIcon = (role: UserRole) => {
-  switch (role) {
-    case UserRole.SUPER_ADMIN:
-      return Crown;
-    case UserRole.ADMIN:
-      return Shield;
-    case UserRole.MODERATOR:
-      return UserCog;
-    case UserRole.USER:
-    default:
-      return UserCheck;
-  }
+/**
+ * Role to Icon mapping
+ */
+const ROLE_ICONS: Record<
+  UserRole,
+  React.ComponentType<{ className?: string }>
+> = {
+  [UserRole.SUPER_ADMIN]: Crown,
+  [UserRole.ADMIN]: Shield,
+  [UserRole.MODERATOR]: UserCog,
+  [UserRole.USER]: UserCheck,
 };
 
 /**
@@ -91,7 +90,7 @@ export function RoleIndicator({
   className,
   ...props
 }: RoleIndicatorProps) {
-  const Icon = getRoleIcon(role);
+  const Icon = ROLE_ICONS[role] || UserCheck;
   const variant = getRoleVariant(role);
   const label = getRoleLabel(role);
 

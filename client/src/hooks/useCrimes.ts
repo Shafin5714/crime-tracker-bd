@@ -7,7 +7,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { crimeService } from "@/services/api";
 import type {
-  CrimeReport,
   CreateCrimeRequest,
   UpdateCrimeRequest,
   ValidateCrimeRequest,

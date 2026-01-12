@@ -32,7 +32,6 @@ import {
   Shield,
   Users,
   Search,
-  MoreHorizontal,
   UserCog,
   History,
   AlertTriangle,

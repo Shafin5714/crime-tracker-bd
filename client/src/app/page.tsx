@@ -3,7 +3,6 @@
 import { useState } from "react";
 import dynamic from "next/dynamic";
 import { OverviewSidebar } from "@/components/dashboard/OverviewSidebar";
-import { RealTimeSidebar } from "@/components/dashboard/RealTimeSidebar";
 import { Header } from "@/components/layout/Header";
 import { MobileNav } from "@/components/layout/MobileNav";
 import { MapFilterPills } from "@/components/dashboard/MapFilterPills";
@@ -23,6 +22,14 @@ const CrimeMap = dynamic(() => import("@/components/map/CrimeMap"), {
     </div>
   ),
 });
+
+const RealTimeSidebar = dynamic(
+  () =>
+    import("@/components/dashboard/RealTimeSidebar").then(
+      (mod) => mod.RealTimeSidebar
+    ),
+  { ssr: false }
+);
 
 export default function DashboardPage() {
   const [filters, setFilters] = useState<Partial<CrimeFilters>>({});

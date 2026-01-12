@@ -32,6 +32,7 @@ export function LanguageSwitcher({
 
   const handleLocaleChange = (locale: LocaleCode) => {
     // Store the locale preference in cookie
+    // eslint-disable-next-line react-hooks/immutability
     document.cookie = `NEXT_LOCALE=${locale};path=/;max-age=31536000`;
     // Reload the page to apply the new locale
     window.location.reload();
@@ -52,7 +53,9 @@ export function LanguageSwitcher({
           ) : (
             <>
               <span className="text-base">{currentLocaleData?.flag}</span>
-              <span className="hidden sm:inline">{currentLocaleData?.nativeName}</span>
+              <span className="hidden sm:inline">
+                {currentLocaleData?.nativeName}
+              </span>
               <Languages className="size-4 sm:hidden" />
             </>
           )}
