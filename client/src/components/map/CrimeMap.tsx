@@ -9,7 +9,14 @@ import {
   ZoomControl,
 } from "react-leaflet";
 import type { Map as LeafletMap } from "leaflet";
-import { MapPin, Loader2, AlertCircle, Locate } from "lucide-react";
+import {
+  MapPin,
+  Loader2,
+  AlertCircle,
+  Locate,
+  Plus,
+  Minus,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import MarkerClusterGroup from "./MarkerCluster";
@@ -89,6 +96,59 @@ function RecenterControl({ position }: { position: [number, number] | null }) {
   }, [map, position]);
 
   return null;
+}
+
+// Unified Map Controls Component
+function MapControls({
+  onLocate,
+  geoLoading,
+}: {
+  onLocate: () => void;
+  geoLoading: boolean;
+}) {
+  const map = useMap();
+
+  return (
+    <div className="absolute bottom-6 right-6 z-1000 flex flex-col gap-2">
+      {/* Geolocation Button */}
+      <Button
+        variant="secondary"
+        size="icon"
+        onClick={onLocate}
+        disabled={geoLoading}
+        className="shadow-md h-10 w-10 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all rounded-xl"
+        title="Find my location"
+      >
+        {geoLoading ? (
+          <Loader2 className="h-5 w-5 animate-spin text-primary" />
+        ) : (
+          <Locate className="h-5 w-5" />
+        )}
+      </Button>
+
+      {/* Zoom Group */}
+      <div className="flex flex-col border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden bg-white dark:bg-zinc-900 shadow-md">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => map.zoomIn()}
+          className="h-10 w-10 border-b border-zinc-200 dark:border-zinc-800 rounded-none hover:bg-zinc-100 dark:hover:bg-zinc-800"
+          title="Zoom In"
+        >
+          <Plus className="h-5 w-5" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => map.zoomOut()}
+          className="h-10 w-10 rounded-none hover:bg-zinc-100 dark:hover:bg-zinc-800"
+          title="Zoom Out"
+        >
+          <Minus className="h-5 w-5" />
+        </Button>
+      </div>
+    </div>
+  );
 }
 
 export default function CrimeMap({
@@ -187,7 +247,7 @@ export default function CrimeMap({
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        <ZoomControl position="bottomright" />
+        <MapControls onLocate={handleLocateMe} geoLoading={geoLoading} />
 
         {/* Map Event Handler */}
         <MapEventHandler onBoundsChange={handleBoundsChange} />
@@ -222,24 +282,6 @@ export default function CrimeMap({
           />
         </div>
       )}
-
-      {/* Locate Me Button */}
-      <div className="absolute bottom-24 right-4 z-1000">
-        <Button
-          variant="secondary"
-          size="icon"
-          onClick={handleLocateMe}
-          disabled={geoLoading}
-          className="shadow-lg"
-          title="Find my location"
-        >
-          {geoLoading ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <Locate className="h-4 w-4" />
-          )}
-        </Button>
-      </div>
 
       {/* Loading Overlay */}
       {isLoading && (
