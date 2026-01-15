@@ -17,6 +17,7 @@ import {
   MapPin,
   AlertTriangle,
   UserCog,
+  FileText,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -41,6 +42,12 @@ const navItems: NavItem[] = [
     href: "/dashboard",
     icon: LayoutDashboard,
     roles: ["ADMIN", "SUPER_ADMIN"],
+  },
+  {
+    name: "Reports",
+    href: "/admin/reports",
+    icon: FileText,
+    roles: ["MODERATOR", "ADMIN", "SUPER_ADMIN"],
   },
   {
     name: "Crime Map",

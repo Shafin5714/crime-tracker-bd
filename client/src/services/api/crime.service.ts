@@ -12,6 +12,7 @@ import type {
   HeatmapFilters,
   HeatmapPoint,
   PaginatedResponse,
+  ApiSuccessResponse,
 } from "@/types/api.types";
 
 const CRIMES_BASE = "/crimes";
@@ -44,32 +45,35 @@ export const crimeService = {
    * Get a single crime report by ID
    */
   async getCrimeById(id: string): Promise<CrimeReport> {
-    const response = await apiClient.get<{ crime: CrimeReport }>(
+    const response = await apiClient.get<ApiSuccessResponse<CrimeReport>>(
       `${CRIMES_BASE}/${id}`
     );
-    return response.data.crime;
+    return response.data.data;
   },
 
   /**
    * Create a new crime report
    */
   async createCrime(data: CreateCrimeRequest): Promise<CrimeReport> {
-    const response = await apiClient.post<{ crime: CrimeReport }>(
+    const response = await apiClient.post<ApiSuccessResponse<CrimeReport>>(
       CRIMES_BASE,
       data
     );
-    return response.data.crime;
+    return response.data.data;
   },
 
   /**
    * Update a crime report (Admin/Moderator only)
    */
-  async updateCrime(id: string, data: UpdateCrimeRequest): Promise<CrimeReport> {
-    const response = await apiClient.put<{ crime: CrimeReport }>(
+  async updateCrime(
+    id: string,
+    data: UpdateCrimeRequest
+  ): Promise<CrimeReport> {
+    const response = await apiClient.put<ApiSuccessResponse<CrimeReport>>(
       `${CRIMES_BASE}/${id}`,
       data
     );
-    return response.data.crime;
+    return response.data.data;
   },
 
   /**
@@ -86,11 +90,11 @@ export const crimeService = {
     id: string,
     data: ValidateCrimeRequest
   ): Promise<CrimeReport> {
-    const response = await apiClient.post<{ crime: CrimeReport }>(
+    const response = await apiClient.post<ApiSuccessResponse<CrimeReport>>(
       `${CRIMES_BASE}/${id}/validate`,
       data
     );
-    return response.data.crime;
+    return response.data.data;
   },
 
   /**
@@ -101,8 +105,10 @@ export const crimeService = {
     const url = queryString
       ? `${CRIMES_BASE}/heatmap?${queryString}`
       : `${CRIMES_BASE}/heatmap`;
-    const response = await apiClient.get<{ heatmapData: HeatmapPoint[] }>(url);
-    return response.data.heatmapData;
+    const response = await apiClient.get<ApiSuccessResponse<HeatmapPoint[]>>(
+      url
+    );
+    return response.data.data;
   },
 
   /**
