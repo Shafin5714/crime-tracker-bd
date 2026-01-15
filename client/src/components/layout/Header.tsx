@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { ThemeToggler } from "@/components/theme/ThemeToggler";
 import {
   Shield,
   MapPin,
@@ -152,8 +153,9 @@ export function Header({
             );
           })}
         </nav>
-
         <div className="flex items-center gap-2 pl-2 border-l">
+          <ThemeToggler />
+
           {/* Notifications */}
           {user && (
             <Button
