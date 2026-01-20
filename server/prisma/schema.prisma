@@ -95,6 +95,7 @@ model CrimeReport {
   user        User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
   validations CrimeValidation[]
 
+  media             String[]     @default([])
   @@index([crimeType])
   @@index([severity])
   @@index([status])

@@ -1,5 +1,11 @@
 import { prisma } from "../utils/prisma";
-import { CrimeType, Severity, ReportStatus, ValidationType, Prisma } from "@prisma/client";
+import {
+  CrimeType,
+  Severity,
+  ReportStatus,
+  ValidationType,
+  Prisma,
+} from "@prisma/client";
 import { NotFoundError, ForbiddenError, ConflictError } from "../utils/errors";
 import {
   CreateCrimeInput,
@@ -14,7 +20,10 @@ const VERIFICATION_THRESHOLD = 5; // Reports with 5+ confirmations become VERIFI
 const DISPUTE_THRESHOLD = 3; // Reports with 3+ denials become DISPUTED
 
 // Create a new crime report
-export const createCrimeReport = async (data: CreateCrimeInput, userId?: string) => {
+export const createCrimeReport = async (
+  data: CreateCrimeInput,
+  userId?: string,
+) => {
   const report = await prisma.crimeReport.create({
     data: {
       userId: data.isAnonymous ? null : userId,
@@ -28,6 +37,7 @@ export const createCrimeReport = async (data: CreateCrimeInput, userId?: string)
       division: data.division,
       district: data.district,
       occurredAt: new Date(data.occurredAt),
+      media: data.media || [],
     },
     include: {
       user: {
@@ -119,7 +129,12 @@ export const listCrimeReports = async (query: ListCrimesQuery) => {
   }
 
   // Bounding box filter
-  if (minLat !== undefined && maxLat !== undefined && minLng !== undefined && maxLng !== undefined) {
+  if (
+    minLat !== undefined &&
+    maxLat !== undefined &&
+    minLng !== undefined &&
+    maxLng !== undefined
+  ) {
     where.latitude = { gte: minLat, lte: maxLat };
     where.longitude = { gte: minLng, lte: maxLng };
   }
@@ -161,9 +176,19 @@ export const listCrimeReports = async (query: ListCrimesQuery) => {
 
   // If radius filter, do precise distance filtering
   let filteredReports = reports;
-  if (radiusFilter && lat !== undefined && lng !== undefined && radius !== undefined) {
+  if (
+    radiusFilter &&
+    lat !== undefined &&
+    lng !== undefined &&
+    radius !== undefined
+  ) {
     filteredReports = reports.filter((report) => {
-      const distance = haversineDistance(lat, lng, report.latitude, report.longitude);
+      const distance = haversineDistance(
+        lat,
+        lng,
+        report.latitude,
+        report.longitude,
+      );
       return distance <= radius;
     });
   }
@@ -196,7 +221,9 @@ export const updateCrimeReport = async (id: string, data: UpdateCrimeInput) => {
       ...(data.status && { status: data.status }),
       ...(data.address && { address: data.address }),
       ...(data.division !== undefined && { division: data.division }),
+      ...(data.division !== undefined && { division: data.division }),
       ...(data.district !== undefined && { district: data.district }),
+      ...(data.media !== undefined && { media: data.media }),
     },
     include: {
       user: {
@@ -228,9 +255,11 @@ export const deleteCrimeReport = async (id: string) => {
 export const validateCrimeReport = async (
   reportId: string,
   userId: string,
-  data: ValidateCrimeInput
+  data: ValidateCrimeInput,
 ) => {
-  const report = await prisma.crimeReport.findUnique({ where: { id: reportId } });
+  const report = await prisma.crimeReport.findUnique({
+    where: { id: reportId },
+  });
 
   if (!report) {
     throw new NotFoundError("Crime report not found");
@@ -368,35 +397,36 @@ export const getCrimeStats = async (division?: string) => {
 
   if (division) where.division = division;
 
-  const [byType, bySeverity, byStatus, total, recentReports] = await Promise.all([
-    prisma.crimeReport.groupBy({
-      by: ["crimeType"],
-      where,
-      _count: true,
-    }),
-    prisma.crimeReport.groupBy({
-      by: ["severity"],
-      where,
-      _count: true,
-    }),
-    prisma.crimeReport.groupBy({
-      by: ["status"],
-      _count: true,
-    }),
-    prisma.crimeReport.count({ where }),
-    prisma.crimeReport.findMany({
-      where,
-      orderBy: { createdAt: "desc" },
-      take: 5,
-      select: {
-        id: true,
-        crimeType: true,
-        severity: true,
-        address: true,
-        createdAt: true,
-      },
-    }),
-  ]);
+  const [byType, bySeverity, byStatus, total, recentReports] =
+    await Promise.all([
+      prisma.crimeReport.groupBy({
+        by: ["crimeType"],
+        where,
+        _count: true,
+      }),
+      prisma.crimeReport.groupBy({
+        by: ["severity"],
+        where,
+        _count: true,
+      }),
+      prisma.crimeReport.groupBy({
+        by: ["status"],
+        _count: true,
+      }),
+      prisma.crimeReport.count({ where }),
+      prisma.crimeReport.findMany({
+        where,
+        orderBy: { createdAt: "desc" },
+        take: 5,
+        select: {
+          id: true,
+          crimeType: true,
+          severity: true,
+          address: true,
+          createdAt: true,
+        },
+      }),
+    ]);
 
   return {
     total,
@@ -417,13 +447,21 @@ export const getCrimeStats = async (division?: string) => {
 };
 
 // Haversine formula to calculate distance between two points
-function haversineDistance(lat1: number, lng1: number, lat2: number, lng2: number): number {
+function haversineDistance(
+  lat1: number,
+  lng1: number,
+  lat2: number,
+  lng2: number,
+): number {
   const R = 6371; // Earth's radius in km
   const dLat = toRad(lat2 - lat1);
   const dLng = toRad(lng2 - lng1);
   const a =
     Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+    Math.cos(toRad(lat1)) *
+      Math.cos(toRad(lat2)) *
+      Math.sin(dLng / 2) *
+      Math.sin(dLng / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
 }

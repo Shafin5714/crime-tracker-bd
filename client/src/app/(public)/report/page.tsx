@@ -21,6 +21,9 @@ import {
   Send,
   Info,
   Loader2,
+  Link as LinkIcon,
+  Plus,
+  X,
 } from "lucide-react";
 import { PrivateRoute } from "@/components/auth";
 import { useSubmitCrime } from "@/hooks/useCrimes";
@@ -77,6 +80,7 @@ interface FormState {
   longitude: number;
   occurredAt: string;
   isAnonymous: boolean;
+  media: string[];
 }
 
 function ReportCrimeContent() {
@@ -92,7 +96,33 @@ function ReportCrimeContent() {
     longitude: 90.4125,
     occurredAt: new Date().toISOString().slice(0, 16),
     isAnonymous: false,
+    media: [],
   });
+
+  const [mediaInput, setMediaInput] = React.useState("");
+
+  const addMedia = () => {
+    if (!mediaInput) return;
+
+    // Basic URL validation
+    try {
+      new URL(mediaInput);
+      setFormData((prev) => ({
+        ...prev,
+        media: [...prev.media, mediaInput],
+      }));
+      setMediaInput("");
+    } catch {
+      setErrors((prev) => ({ ...prev, media: "Please enter a valid URL" }));
+    }
+  };
+
+  const removeMedia = (index: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      media: prev.media.filter((_, i) => i !== index),
+    }));
+  };
 
   const [errors, setErrors] = React.useState<
     Partial<Record<keyof FormState, string>>
@@ -130,6 +160,7 @@ function ReportCrimeContent() {
         longitude: formData.longitude,
         occurredAt: new Date(formData.occurredAt).toISOString(),
         isAnonymous: formData.isAnonymous,
+        media: formData.media,
       },
       {
         onSuccess: () => {
@@ -138,10 +169,10 @@ function ReportCrimeContent() {
         },
         onError: (error) => {
           showError(
-            error instanceof Error ? error.message : "Failed to submit report"
+            error instanceof Error ? error.message : "Failed to submit report",
           );
         },
-      }
+      },
     );
   };
 
@@ -162,7 +193,7 @@ function ReportCrimeContent() {
       },
       () => {
         showError("Unable to get your location. Please enter manually.");
-      }
+      },
     );
   };
 
@@ -288,6 +319,67 @@ function ReportCrimeContent() {
                     {errors.description}
                   </p>
                 )}
+              </div>
+
+              {/* Evidence / Sources */}
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Sources / Evidence (Optional)</Label>
+                  <p className="text-xs text-muted-foreground">
+                    Add links to news articles, social media posts, or other
+                    public evidence.
+                  </p>
+
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="https://..."
+                      value={mediaInput}
+                      onChange={(e) => {
+                        setMediaInput(e.target.value);
+                        if (errors.media)
+                          setErrors((prev) => ({ ...prev, media: undefined }));
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          addMedia();
+                        }
+                      }}
+                    />
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      onClick={addMedia}
+                    >
+                      <Plus className="size-4 mr-2" />
+                      Add
+                    </Button>
+                  </div>
+                  {errors.media && (
+                    <p className="text-sm text-destructive">{errors.media}</p>
+                  )}
+
+                  {formData.media.length > 0 && (
+                    <div className="space-y-2 mt-2">
+                      {formData.media.map((url, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center gap-2 p-2 rounded-md bg-muted/50 text-sm group"
+                        >
+                          <LinkIcon className="size-3 text-muted-foreground shrink-0" />
+                          <span className="truncate flex-1">{url}</span>
+                          <button
+                            type="button"
+                            onClick={() => removeMedia(index)}
+                            className="text-muted-foreground hover:text-destructive transition-colors opacity-0 group-hover:opacity-100"
+                          >
+                            <X className="size-4" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Location */}

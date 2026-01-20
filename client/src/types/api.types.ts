@@ -126,6 +126,7 @@ export interface CrimeReport {
   };
   confirmations?: number;
   denials?: number;
+  media: string[];
 }
 
 export interface CreateCrimeRequest {
@@ -139,6 +140,7 @@ export interface CreateCrimeRequest {
   district?: string;
   occurredAt: string;
   isAnonymous?: boolean;
+  media?: string[];
 }
 
 export interface UpdateCrimeRequest {
@@ -149,6 +151,7 @@ export interface UpdateCrimeRequest {
   address?: string;
   division?: string;
   district?: string;
+  media?: string[];
 }
 
 export interface ValidateCrimeRequest {

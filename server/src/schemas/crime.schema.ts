@@ -1,5 +1,10 @@
 import { z } from "zod";
-import { CrimeType, Severity, ReportStatus, ValidationType } from "@prisma/client";
+import {
+  CrimeType,
+  Severity,
+  ReportStatus,
+  ValidationType,
+} from "@prisma/client";
 
 // Create crime report schema
 export const createCrimeSchema = z.object({
@@ -20,6 +25,7 @@ export const createCrimeSchema = z.object({
   district: z.string().optional(),
   occurredAt: z.string().datetime({ message: "Invalid datetime format" }),
   isAnonymous: z.boolean().optional().default(false),
+  media: z.array(z.string().url()).optional(),
 });
 
 export type CreateCrimeInput = z.infer<typeof createCrimeSchema>;
@@ -37,6 +43,7 @@ export const updateCrimeSchema = z.object({
   address: z.string().min(5).optional(),
   division: z.string().optional(),
   district: z.string().optional(),
+  media: z.array(z.string().url()).optional(),
 });
 
 export type UpdateCrimeInput = z.infer<typeof updateCrimeSchema>;
@@ -56,24 +63,24 @@ export const listCrimesQuerySchema = z.object({
   // Pagination
   page: z.coerce.number().int().positive().optional().default(1),
   limit: z.coerce.number().int().min(1).max(100).optional().default(20),
-  
+
   // Filters
   crimeType: z.nativeEnum(CrimeType).optional(),
   severity: z.nativeEnum(Severity).optional(),
   status: z.nativeEnum(ReportStatus).optional(),
   division: z.string().optional(),
   district: z.string().optional(),
-  
+
   // Date range
   startDate: z.string().datetime().optional(),
   endDate: z.string().datetime().optional(),
-  
+
   // Geospatial - bounding box
   minLat: z.coerce.number().min(-90).max(90).optional(),
   maxLat: z.coerce.number().min(-90).max(90).optional(),
   minLng: z.coerce.number().min(-180).max(180).optional(),
   maxLng: z.coerce.number().min(-180).max(180).optional(),
-  
+
   // Geospatial - radius search
   lat: z.coerce.number().min(-90).max(90).optional(),
   lng: z.coerce.number().min(-180).max(180).optional(),

@@ -17,6 +17,7 @@ import {
   Info,
   ChevronRight,
   ShieldCheck,
+  ExternalLink,
 } from "lucide-react";
 
 import { useCrime, useValidateCrime, useDeleteCrime } from "@/hooks/useCrimes";
@@ -54,7 +55,7 @@ const ReportMiniMap = dynamic(
         <Loader2 className="size-6 animate-spin text-muted-foreground" />
       </div>
     ),
-  }
+  },
 );
 
 export default function ReportDetailsPage() {
@@ -92,7 +93,7 @@ export default function ReportDetailsPage() {
             description: "Failed to verify the report. Please try again.",
           });
         },
-      }
+      },
     );
   };
 
@@ -352,15 +353,36 @@ export default function ReportDetailsPage() {
                   </div>
                 </div>
                 <div>
-                  <h4 className="font-semibold mb-1 flex items-center gap-2">
-                    <Info className="size-4" /> Additional Info
-                  </h4>
                   <div className="text-sm text-muted-foreground space-y-1">
                     <p>Division: {report.division || "N/A"}</p>
                     <p>District: {report.district || "N/A"}</p>
                   </div>
                 </div>
               </div>
+
+              {/* Media / Sources */}
+              {report.media && report.media.length > 0 && (
+                <div>
+                  <Separator className="mb-4" />
+                  <h4 className="font-semibold mb-2 flex items-center gap-2">
+                    <Info className="size-4" /> Sources / Evidence
+                  </h4>
+                  <div className="space-y-2">
+                    {report.media.map((url, index) => (
+                      <a
+                        key={index}
+                        href={url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 text-sm text-blue-600 hover:underline break-all"
+                      >
+                        <ExternalLink className="size-3 shrink-0" />
+                        {url}
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
             </CardContent>
             <CardFooter className="bg-zinc-50 dark:bg-zinc-900/50 border-t py-4">
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
