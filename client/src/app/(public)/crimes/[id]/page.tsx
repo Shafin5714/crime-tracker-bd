@@ -24,7 +24,6 @@ import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -214,6 +213,35 @@ export default function PublicReportDetailsPage() {
 
               <Separator />
 
+              {/* Media / Sources */}
+              <div className="bg-muted/30 p-4 rounded-lg border border-dashed border-muted-foreground/20">
+                <h4 className="font-semibold mb-3 flex items-center gap-2 text-primary">
+                  <Info className="size-4" /> Sources / Evidence
+                </h4>
+                {report.media && report.media.length > 0 ? (
+                  <div className="space-y-2">
+                    {report.media.map((url, index) => (
+                      <a
+                        key={index}
+                        href={url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400 hover:underline break-all group bg-background p-2 rounded border border-transparent hover:border-border transition-all"
+                      >
+                        <ExternalLink className="size-3 shrink-0 group-hover:scale-110 transition-transform" />
+                        {url}
+                      </a>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground italic">
+                    No additional sources or evidence provided for this report.
+                  </p>
+                )}
+              </div>
+
+              <Separator />
+
               <div className="grid gap-6 sm:grid-cols-2">
                 <div>
                   <h4 className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-2">
@@ -243,29 +271,6 @@ export default function PublicReportDetailsPage() {
                   </p>
                 </div>
               </div>
-
-              {/* Media / Sources */}
-              {report.media && report.media.length > 0 && (
-                <div className="bg-muted/30 p-4 rounded-lg border border-dashed border-muted-foreground/20">
-                  <h4 className="font-semibold mb-3 flex items-center gap-2 text-primary">
-                    <Info className="size-4" /> Sources / Evidence
-                  </h4>
-                  <div className="space-y-2">
-                    {report.media.map((url, index) => (
-                      <a
-                        key={index}
-                        href={url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400 hover:underline break-all group bg-background p-2 rounded border border-transparent hover:border-border transition-all"
-                      >
-                        <ExternalLink className="size-3 shrink-0 group-hover:scale-110 transition-transform" />
-                        {url}
-                      </a>
-                    ))}
-                  </div>
-                </div>
-              )}
             </CardContent>
             <CardFooter className="bg-muted/50 py-3 px-6 border-t flex justify-between items-center">
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -274,10 +279,10 @@ export default function PublicReportDetailsPage() {
               </div>
               <div className="flex gap-4 text-xs font-medium">
                 <span className="flex items-center gap-1 text-green-600">
-                  {report.confirmations || 0} Confirmations
+                  {report.verificationCount || 0} Confirmations
                 </span>
                 <span className="flex items-center gap-1 text-red-600">
-                  {report.denials || 0} Denials
+                  {report.denialCount || 0} Denials
                 </span>
               </div>
             </CardFooter>
@@ -319,17 +324,17 @@ export default function PublicReportDetailsPage() {
                   <AlertTriangle className="size-4 mt-0.5 shrink-0" />
                   <span>
                     This report was submitted anonymously to protect the
-                    reporter's identity.
+                    reporter&apos;s identity.
                   </span>
                 </div>
               ) : (
                 <div className="flex items-center gap-3">
                   <div className="size-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
-                    {report.reporter?.name?.charAt(0) || "U"}
+                    {report.user?.name?.charAt(0) || "U"}
                   </div>
                   <div>
                     <p className="font-medium text-sm">
-                      {report.reporter?.name || "Verified User"}
+                      {report.user?.name || "Verified User"}
                     </p>
                     <p className="text-xs text-muted-foreground">
                       Community Member

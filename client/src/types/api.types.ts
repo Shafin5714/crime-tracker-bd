@@ -116,7 +116,7 @@ export interface CrimeReport {
   reporterId: string | null;
   createdAt: string;
   updatedAt: string;
-  reporter?: {
+  user?: {
     id: string;
     name: string | null;
     email: string;
@@ -124,8 +124,8 @@ export interface CrimeReport {
   _count?: {
     validations: number;
   };
-  confirmations?: number;
-  denials?: number;
+  verificationCount: number;
+  denialCount: number;
   media: string[];
 }
 

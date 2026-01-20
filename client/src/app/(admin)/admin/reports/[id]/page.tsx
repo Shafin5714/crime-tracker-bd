@@ -428,17 +428,15 @@ export default function ReportDetailsPage() {
                   <AlertTriangle className="size-4" />
                   <span>This report was submitted anonymously.</span>
                 </div>
-              ) : report.reporter ? (
+              ) : report.user ? (
                 <div className="space-y-2">
                   <div className="grid grid-cols-[100px_1fr] gap-2 text-sm">
                     <span className="font-medium">Name:</span>
-                    <span>{report.reporter.name || "N/A"}</span>
+                    <span>{report.user.name || "N/A"}</span>
                     <span className="font-medium">Email:</span>
-                    <span>{report.reporter.email}</span>
+                    <span>{report.user.email}</span>
                     <span className="font-medium">User ID:</span>
-                    <span className="font-mono text-xs">
-                      {report.reporter.id}
-                    </span>
+                    <span className="font-mono text-xs">{report.user.id}</span>
                   </div>
                 </div>
               ) : (
@@ -468,11 +466,11 @@ export default function ReportDetailsPage() {
                   <span>{report._count?.validations || 0}</span>
                   <span className="font-medium">Confirmations:</span>
                   <span className="text-green-600 font-medium">
-                    {report.confirmations || 0}
+                    {report.verificationCount || 0}
                   </span>
                   <span className="font-medium">Denials:</span>
                   <span className="text-red-600 font-medium">
-                    {report.denials || 0}
+                    {report.denialCount || 0}
                   </span>
                 </div>
               </div>
