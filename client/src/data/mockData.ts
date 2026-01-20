@@ -1,4 +1,9 @@
-import { CrimeReport, CrimeType, ReportStatus, Severity } from "@/types/api.types";
+import {
+  CrimeReport,
+  CrimeType,
+  ReportStatus,
+  Severity,
+} from "@/types/api.types";
 
 const now = new Date();
 const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000).toISOString();
@@ -10,7 +15,8 @@ export const MOCK_CRIMES: CrimeReport[] = [
   {
     id: "mock-1",
     crimeType: CrimeType.ROBBERY,
-    description: "Armed robbery at a convenience store. Two suspects fled on a motorbike.",
+    description:
+      "Armed robbery at a convenience store. Two suspects fled on a motorbike.",
     severity: Severity.HIGH,
     status: ReportStatus.VERIFIED,
     latitude: 23.8103,
@@ -23,18 +29,20 @@ export const MOCK_CRIMES: CrimeReport[] = [
     reporterId: "user-1",
     createdAt: oneHourAgo,
     updatedAt: oneHourAgo,
-    confirmations: 5,
-    denials: 0,
-    reporter: {
+    verificationCount: 5,
+    denialCount: 0,
+    media: [],
+    user: {
       id: "user-1",
       name: "John Doe",
-      email: "john@example.com"
-    }
+      email: "john@example.com",
+    },
   },
   {
     id: "mock-2",
     crimeType: CrimeType.THEFT,
-    description: "Mobile phone snatched from a pedestrian while waiting for a bus.",
+    description:
+      "Mobile phone snatched from a pedestrian while waiting for a bus.",
     severity: Severity.MEDIUM,
     status: ReportStatus.VERIFIED,
     latitude: 23.7937,
@@ -47,8 +55,9 @@ export const MOCK_CRIMES: CrimeReport[] = [
     reporterId: null,
     createdAt: twoHoursAgo,
     updatedAt: twoHoursAgo,
-    confirmations: 12,
-    denials: 1
+    verificationCount: 12,
+    denialCount: 1,
+    media: [],
   },
   {
     id: "mock-3",
@@ -66,18 +75,20 @@ export const MOCK_CRIMES: CrimeReport[] = [
     reporterId: "user-2",
     createdAt: yesterday,
     updatedAt: yesterday,
-    confirmations: 3,
-    denials: 0,
-    reporter: {
+    verificationCount: 3,
+    denialCount: 0,
+    media: [],
+    user: {
       id: "user-2",
       name: "Jane Smith",
-      email: "jane@example.com"
-    }
+      email: "jane@example.com",
+    },
   },
   {
     id: "mock-4",
     crimeType: CrimeType.ASSAULT,
-    description: "Physical altercation between two groups near the market entrance.",
+    description:
+      "Physical altercation between two groups near the market entrance.",
     severity: Severity.CRITICAL,
     status: ReportStatus.VERIFIED,
     latitude: 23.7511,
@@ -90,13 +101,14 @@ export const MOCK_CRIMES: CrimeReport[] = [
     reporterId: "user-3",
     createdAt: twoDaysAgo,
     updatedAt: twoDaysAgo,
-    confirmations: 20,
-    denials: 2,
-    reporter: {
+    verificationCount: 20,
+    denialCount: 2,
+    media: [],
+    user: {
       id: "user-3",
       name: "Admin User",
-      email: "admin@example.com"
-    }
+      email: "admin@example.com",
+    },
   },
   {
     id: "mock-5",
@@ -114,8 +126,9 @@ export const MOCK_CRIMES: CrimeReport[] = [
     reporterId: null,
     createdAt: yesterday,
     updatedAt: yesterday,
-    confirmations: 8,
-    denials: 0
+    verificationCount: 8,
+    denialCount: 0,
+    media: [],
   },
   {
     id: "mock-6",
@@ -123,8 +136,8 @@ export const MOCK_CRIMES: CrimeReport[] = [
     description: "Verbal harassment reported near the university campus.",
     severity: Severity.MEDIUM,
     status: ReportStatus.VERIFIED,
-    latitude: 23.7330,
-    longitude: 90.3850,
+    latitude: 23.733,
+    longitude: 90.385,
     address: "Dhaka University Area",
     division: "Dhaka",
     district: "Dhaka",
@@ -133,29 +146,30 @@ export const MOCK_CRIMES: CrimeReport[] = [
     reporterId: null,
     createdAt: oneHourAgo,
     updatedAt: oneHourAgo,
-    confirmations: 15,
-    denials: 1
-  }
+    verificationCount: 15,
+    denialCount: 1,
+    media: [],
+  },
 ];
 
 export const MOCK_OVERVIEW_STATS = {
   totalIncidents: 789,
   totalIncidentsChange: 8.5,
   highPriority: 112,
-  highPriorityChange: -1
+  highPriorityChange: -1,
 };
 
 export const MOCK_REGIONAL_DATA = [
   { region: "Mirpur", count: 189, change: 2 },
   { region: "Gulshan", count: 120, change: -1 },
   { region: "Dhanmondi", count: 95, change: 3 },
-  { region: "Uttara", count: 78, change: -1 }
+  { region: "Uttara", count: 78, change: -1 },
 ];
 
 export const MOCK_TYPE_DISTRIBUTION = [
   { type: "Theft", percentage: 28 },
   { type: "Assault", percentage: 19 },
-  { type: "Vandalism", percentage: 15 }
+  { type: "Vandalism", percentage: 15 },
 ];
 
 export const MOCK_ALERTS = [
@@ -165,7 +179,7 @@ export const MOCK_ALERTS = [
     location: "Mirpur 10 - Police Dispatched",
     time: "2 mins ago",
     severity: "Urgent",
-    type: "critical"
+    type: "critical",
   },
   {
     id: "alert-2",
@@ -173,6 +187,6 @@ export const MOCK_ALERTS = [
     location: "Gulshan 2 - Last Known Location",
     time: "15 mins ago",
     severity: "High",
-    type: "warning"
-  }
+    type: "warning",
+  },
 ];

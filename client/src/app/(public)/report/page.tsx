@@ -106,14 +106,23 @@ function ReportCrimeContent() {
 
     // Basic URL validation
     try {
-      new URL(mediaInput);
+      let urlToAdd = mediaInput.trim();
+      if (!/^https?:\/\//i.test(urlToAdd)) {
+        urlToAdd = `https://${urlToAdd}`;
+      }
+      new URL(urlToAdd);
+
       setFormData((prev) => ({
         ...prev,
-        media: [...prev.media, mediaInput],
+        media: [...prev.media, urlToAdd],
       }));
       setMediaInput("");
+      if (errors.media) setErrors((prev) => ({ ...prev, media: undefined }));
     } catch {
-      setErrors((prev) => ({ ...prev, media: "Please enter a valid URL" }));
+      setErrors((prev) => ({
+        ...prev,
+        media: "Please enter a valid URL (e.g., https://example.com)",
+      }));
     }
   };
 
@@ -147,7 +156,32 @@ function ReportCrimeContent() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validate()) return;
+    // Handle pending media input (User typed but didn't click Add)
+    const finalMedia = [...formData.media];
+    let mediaInputError = null;
+
+    if (mediaInput && mediaInput.trim() !== "") {
+      try {
+        let urlToAdd = mediaInput.trim();
+        if (!/^https?:\/\//i.test(urlToAdd)) {
+          urlToAdd = `https://${urlToAdd}`;
+        }
+        new URL(urlToAdd);
+        finalMedia.push(urlToAdd);
+      } catch {
+        mediaInputError =
+          "Please add or clear the invalid URL in the input field";
+      }
+    }
+
+    const isFormValid = validate();
+
+    if (mediaInputError) {
+      setErrors((prev) => ({ ...prev, media: mediaInputError }));
+      return;
+    }
+
+    if (!isFormValid) return;
     if (!formData.crimeType || !formData.severity) return;
 
     submitCrime(
@@ -160,7 +194,7 @@ function ReportCrimeContent() {
         longitude: formData.longitude,
         occurredAt: new Date(formData.occurredAt).toISOString(),
         isAnonymous: formData.isAnonymous,
-        media: formData.media,
+        media: finalMedia,
       },
       {
         onSuccess: () => {

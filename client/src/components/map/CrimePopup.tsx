@@ -108,10 +108,10 @@ export default function CrimePopup({ crime }: CrimePopupProps) {
         </div>
 
         {/* Reporter */}
-        {!crime.isAnonymous && crime.reporter && (
+        {!crime.isAnonymous && crime.user && (
           <div className="flex items-center gap-1.5">
             <User className="h-3 w-3 shrink-0" />
-            <span>{crime.reporter.name || "Anonymous"}</span>
+            <span>{crime.user.name || "Anonymous"}</span>
           </div>
         )}
         {crime.isAnonymous && (
@@ -123,12 +123,15 @@ export default function CrimePopup({ crime }: CrimePopupProps) {
       </div>
 
       {/* Validation counts */}
-      {(crime.confirmations !== undefined || crime.denials !== undefined) && (
+      {(crime.verificationCount !== undefined ||
+        crime.denialCount !== undefined) && (
         <div className="flex items-center gap-2 text-xs mb-3">
           <span className="text-green-600">
-            ✓ {crime.confirmations || 0} confirmed
+            ✓ {crime.verificationCount || 0} confirmed
           </span>
-          <span className="text-red-600">✗ {crime.denials || 0} denied</span>
+          <span className="text-red-600">
+            ✗ {crime.denialCount || 0} denied
+          </span>
         </div>
       )}
 

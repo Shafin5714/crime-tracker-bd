@@ -75,17 +75,17 @@ function ModerationContent() {
           showSuccess(
             type === ValidationType.CONFIRM
               ? "Report verified!"
-              : "Report rejected"
+              : "Report rejected",
           );
           setSelectedReport(null);
           refetch();
         },
         onError: (error) => {
           showError(
-            error instanceof Error ? error.message : "Validation failed"
+            error instanceof Error ? error.message : "Validation failed",
           );
         },
-      }
+      },
     );
   };
 
@@ -323,8 +323,8 @@ function ModerationContent() {
                     <p className="text-sm">
                       {selectedReport.isAnonymous
                         ? "Anonymous"
-                        : selectedReport.reporter?.name ||
-                          selectedReport.reporter?.email ||
+                        : selectedReport.user?.name ||
+                          selectedReport.user?.email ||
                           "Unknown"}
                     </p>
                   </div>
@@ -336,7 +336,7 @@ function ModerationContent() {
                         onClick={() =>
                           handleValidate(
                             selectedReport.id,
-                            ValidationType.CONFIRM
+                            ValidationType.CONFIRM,
                           )
                         }
                         disabled={isValidating}
