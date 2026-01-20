@@ -8,14 +8,12 @@ import {
   MoreHorizontal,
   Search,
   History,
-  AlertCircle,
   CheckCircle2,
   XCircle,
-  Clock,
 } from "lucide-react";
 
 import { useCrimes } from "@/hooks/useCrimes";
-import { ReportStatus, Severity, CrimeType } from "@/types/api.types";
+import { ReportStatus, Severity } from "@/types/api.types";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";

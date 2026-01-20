@@ -1,13 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useCallback } from "react";
-import {
-  MapContainer,
-  TileLayer,
-  useMap,
-  useMapEvents,
-  ZoomControl,
-} from "react-leaflet";
+import { useEffect, useRef, useCallback } from "react";
+import { MapContainer, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import type { Map as LeafletMap } from "leaflet";
 import {
   MapPin,
@@ -208,15 +202,13 @@ export default function CrimeMap({
   }, [externalFilters, setFilters]);
 
   // Memoize the center position
-  const mapCenter = useMemo<[number, number]>(() => {
-    if (externalFilters?.lat && externalFilters?.lng) {
-      return [externalFilters.lat, externalFilters.lng];
-    }
-    if (userPosition) {
-      return [userPosition.latitude, userPosition.longitude];
-    }
-    return DEFAULT_CENTER;
-  }, [userPosition, externalFilters?.lat, externalFilters?.lng]);
+  // Calculate center position
+  let mapCenter: [number, number] = DEFAULT_CENTER;
+  if (externalFilters?.lat && externalFilters?.lng) {
+    mapCenter = [externalFilters.lat, externalFilters.lng];
+  } else if (userPosition) {
+    mapCenter = [userPosition.latitude, userPosition.longitude];
+  }
 
   // Recenter map when filters.lat/lng changes
   useEffect(() => {

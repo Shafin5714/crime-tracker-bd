@@ -26,7 +26,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import {
@@ -75,7 +74,7 @@ function LocationsContent() {
   const { data: areas, isLoading, refetch } = useAreas();
   const { mutate: createArea, isPending: isCreating } = useCreateArea();
   const { mutate: updateArea, isPending: isUpdating } = useUpdateArea();
-  const { mutate: deleteArea, isPending: isDeleting } = useDeleteArea();
+  const { mutate: deleteArea } = useDeleteArea();
 
   const filteredAreas = areas?.filter((area) =>
     area.name.toLowerCase().includes(searchQuery.toLowerCase()),
