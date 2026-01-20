@@ -79,19 +79,6 @@ function MapEventHandler({
   return null;
 }
 
-// Component to recenter map
-function RecenterControl({ position }: { position: [number, number] | null }) {
-  const map = useMap();
-
-  useEffect(() => {
-    if (position) {
-      map.flyTo(position, 14, { duration: 1.5 });
-    }
-  }, [map, position]);
-
-  return null;
-}
-
 // Unified Map Controls Component
 function MapControls({
   onLocate,
@@ -237,6 +224,17 @@ export default function CrimeMap({
     requestLocation();
   }, [requestLocation]);
 
+  // Recenter map when user position changes
+  useEffect(() => {
+    if (userPosition && mapRef.current) {
+      mapRef.current.flyTo(
+        [userPosition.latitude, userPosition.longitude],
+        14,
+        { duration: 1.5 },
+      );
+    }
+  }, [userPosition]);
+
   return (
     <div className={`relative w-full h-full ${className}`}>
       {/* Map Container */}
@@ -257,11 +255,7 @@ export default function CrimeMap({
         <MapEventHandler onBoundsChange={handleBoundsChange} />
 
         {/* Recenter when user position changes */}
-        {userPosition && (
-          <RecenterControl
-            position={[userPosition.latitude, userPosition.longitude]}
-          />
-        )}
+        {/* handled by useEffect */}
 
         {/* Crime Markers with Clustering */}
         <MarkerClusterGroup>
