@@ -10,6 +10,8 @@ import {
   MOCK_REGIONAL_DATA,
   MOCK_TYPE_DISTRIBUTION,
 } from "@/data/mockData";
+import { useSearchArea } from "@/hooks/useAreas";
+import { useDebounce } from "@/hooks/useDebounce";
 import {
   BarChart,
   ArrowUp,
@@ -19,6 +21,7 @@ import {
   Search,
   MapPin,
   X,
+  Loader2,
 } from "lucide-react";
 
 // Popular places data
@@ -36,37 +39,65 @@ const POPULAR_PLACES = [
 interface OverviewSidebarProps {
   isOpen: boolean;
   onToggle: () => void;
+  onLocationSelect?: (location: {
+    lat: number;
+    lng: number;
+    name: string;
+  }) => void;
+  onClear?: () => void;
 }
 
-export function OverviewSidebar({ isOpen, onToggle }: OverviewSidebarProps) {
+export function OverviewSidebar({
+  isOpen,
+  onToggle,
+  onLocationSelect,
+  onClear,
+}: OverviewSidebarProps) {
   const [searchQuery, setSearchQuery] = useState("");
+  const debouncedQuery = useDebounce(searchQuery, 300);
+  const { data: area, isLoading: isSearchLoading } =
+    useSearchArea(debouncedQuery);
   const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
-
-  // Filter places based on search query
-  const filteredPlaces = searchQuery
-    ? POPULAR_PLACES.filter((place) =>
-        place.name.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    : [];
+  const [showResults, setShowResults] = useState(false);
 
   const handleRegionSelect = (region: string) => {
-    setSelectedRegion(selectedRegion === region ? null : region);
-    setSearchQuery("");
+    // This is for the static popular areas
+    const place = POPULAR_PLACES.find((p) => p.name === region);
+    if (place) {
+      // In a real app, popular places should also have coordinates or trigger a search.
+      // For now, we just set the query to trigger the real search logic if needed
+      // or we can just update the UI state.
+      setSelectedRegion(region);
+      setSearchQuery(region);
+      setShowResults(true);
+    }
   };
 
-  const handlePlaceSelect = (placeName: string) => {
-    setSelectedRegion(placeName);
-    setSearchQuery("");
+  const handleAreaSelect = (selectedArea: {
+    latitude: number;
+    longitude: number;
+    name: string;
+  }) => {
+    setSelectedRegion(selectedArea.name);
+    setSearchQuery(selectedArea.name);
+    setShowResults(false);
+    onLocationSelect?.({
+      lat: selectedArea.latitude,
+      lng: selectedArea.longitude,
+      name: selectedArea.name,
+    });
   };
 
   const clearSelection = () => {
     setSelectedRegion(null);
     setSearchQuery("");
+    setShowResults(false);
+    onClear?.();
   };
 
   return (
     <aside
-      className={`relative flex-shrink-0 transition-all duration-300 z-20 ${
+      className={`relative shrink-0 transition-all duration-300 z-20 ${
         isOpen ? "w-80" : "w-0"
       }`}
     >
@@ -93,17 +124,26 @@ export function OverviewSidebar({ isOpen, onToggle }: OverviewSidebarProps) {
 
             {/* Search Input */}
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors">
+                {isSearchLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Search className="h-4 w-4" />
+                )}
+              </div>
               <Input
                 type="text"
                 placeholder="Search places..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setShowResults(true);
+                }}
                 className="pl-9 h-9 text-sm bg-muted/30 border-muted focus:bg-background transition-colors"
               />
               {searchQuery && (
                 <button
-                  onClick={() => setSearchQuery("")}
+                  onClick={clearSelection}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                 >
                   <X className="h-3.5 w-3.5" />
@@ -112,27 +152,30 @@ export function OverviewSidebar({ isOpen, onToggle }: OverviewSidebarProps) {
             </div>
 
             {/* Search Results Dropdown */}
-            {searchQuery && filteredPlaces.length > 0 && (
-              <div className="mt-2 bg-card border rounded-lg shadow-lg overflow-hidden">
-                {filteredPlaces.map((place) => (
+            {showResults && debouncedQuery.length >= 2 && (
+              <div className="mt-2 bg-card border rounded-lg shadow-lg overflow-hidden z-30 relative">
+                {isSearchLoading ? (
+                  <div className="p-3 text-center">
+                    <Loader2 className="h-4 w-4 animate-spin mx-auto text-muted-foreground" />
+                  </div>
+                ) : area ? (
                   <button
-                    key={place.name}
-                    onClick={() => handlePlaceSelect(place.name)}
+                    onClick={() => handleAreaSelect(area)}
                     className="w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-muted/50 transition-colors"
                   >
                     <MapPin className="h-3.5 w-3.5 text-primary" />
-                    <span>{place.name}</span>
-                    <span className="text-xs text-muted-foreground ml-auto capitalize">
-                      {place.type}
-                    </span>
+                    <div className="flex flex-col">
+                      <span>{area.name}</span>
+                      <span className="text-[10px] text-muted-foreground">
+                        {area.district}, {area.division}
+                      </span>
+                    </div>
                   </button>
-                ))}
-              </div>
-            )}
-
-            {searchQuery && filteredPlaces.length === 0 && (
-              <div className="mt-2 p-3 text-sm text-muted-foreground text-center bg-muted/20 rounded-lg">
-                No places found for &quot;{searchQuery}&quot;
+                ) : (
+                  <div className="p-3 text-sm text-muted-foreground text-center bg-muted/10">
+                    No places found for &quot;{debouncedQuery}&quot;
+                  </div>
+                )}
               </div>
             )}
 

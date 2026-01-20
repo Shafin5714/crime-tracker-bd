@@ -207,6 +207,34 @@ export interface UpdateUserRoleRequest {
   role: UserRole;
 }
 
+// -------------------- Area Types --------------------
+export interface Area {
+  id: string;
+  name: string;
+  latitude: number;
+  longitude: number;
+  district: string | null;
+  division: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateAreaRequest {
+  name: string;
+  latitude: number;
+  longitude: number;
+  district?: string;
+  division?: string;
+}
+
+export interface UpdateAreaRequest {
+  name?: string;
+  latitude?: number;
+  longitude?: number;
+  district?: string;
+  division?: string;
+}
+
 // -------------------- Pagination Types --------------------
 export interface PaginatedResponse<T> {
   data: T[];

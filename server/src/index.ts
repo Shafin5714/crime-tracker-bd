@@ -9,6 +9,7 @@ import { errorHandler } from "./middleware/error.middleware";
 import authRoutes from "./routes/auth.routes";
 import crimeRoutes from "./routes/crime.routes";
 import userRoutes from "./routes/user.routes";
+import areaRoutes from "./routes/area.routes";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -19,7 +20,7 @@ app.use(
   cors({
     origin: process.env.CLIENT_URL || "http://localhost:3000",
     credentials: true,
-  })
+  }),
 );
 
 // Rate limiting
@@ -68,6 +69,9 @@ app.use("/api/crimes", crimeRoutes);
 
 // User routes (admin)
 app.use("/api/users", userRoutes);
+
+// Area routes
+app.use("/api/areas", areaRoutes);
 
 // 404 handler
 app.use((_req, res) => {

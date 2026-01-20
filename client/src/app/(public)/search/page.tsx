@@ -25,6 +25,8 @@ import {
   Map,
 } from "lucide-react";
 import { useCrimes } from "@/hooks/useCrimes";
+import { areaService } from "@/services/api";
+import { showInfo, showError } from "@/lib/toast";
 
 import { EmptyState } from "@/components/common/EmptyState";
 import { Pagination } from "@/components/common/Pagination";
@@ -77,11 +79,43 @@ export default function SearchPage() {
 
   const { data, isLoading, error } = useCrimes(filters);
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
-    // In a full implementation, this would geocode the search query
-    // For now, we just trigger a refetch
-    setFilters((prev) => ({ ...prev, page: 1 }));
+
+    if (!searchQuery.trim()) {
+      setFilters((prev) => ({
+        ...prev,
+        lat: undefined,
+        lng: undefined,
+        radius: undefined,
+        page: 1,
+      }));
+      return;
+    }
+
+    try {
+      const area = await areaService.searchArea(searchQuery);
+
+      if (area) {
+        showInfo(`Showing results for ${area.name}`);
+        setFilters((prev) => ({
+          ...prev,
+          lat: area.latitude,
+          lng: area.longitude,
+          radius: 5, // Default 5km radius
+          page: 1,
+        }));
+      } else {
+        showError(
+          "Location not found in our database. Try another Dhaka location.",
+        );
+        // Optional: Could fall back to geocoding here if desired,
+        // but user requested to use DB locations to avoid costs.
+      }
+    } catch (error) {
+      console.error("Search error:", error);
+      showError("An error occurred while searching for the location.");
+    }
   };
 
   const handleFilterChange = (key: keyof CrimeFilters, value: string) => {
@@ -342,7 +376,7 @@ export default function SearchPage() {
                                 <MapPin className="size-3" />
                                 {crime.address ||
                                   `${crime.latitude.toFixed(
-                                    4
+                                    4,
                                   )}, ${crime.longitude.toFixed(4)}`}
                               </span>
                               <span className="flex items-center gap-1">

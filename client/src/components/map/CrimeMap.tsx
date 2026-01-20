@@ -181,8 +181,8 @@ export default function CrimeMap({
     apiCrimes && apiCrimes.length > 0
       ? apiCrimes
       : !isLoading && process.env.NODE_ENV === "development"
-      ? MOCK_CRIMES
-      : [];
+        ? MOCK_CRIMES
+        : [];
 
   // Sync external filters from props
   useEffect(() => {
@@ -199,7 +199,7 @@ export default function CrimeMap({
         const hasChanged = Object.keys(externalFilters).some(
           (key) =>
             externalFilters[key as keyof CrimeFilters] !==
-            prev[key as keyof CrimeFilters]
+            prev[key as keyof CrimeFilters],
         );
 
         return hasChanged ? nextFilters : prev;
@@ -209,11 +209,23 @@ export default function CrimeMap({
 
   // Memoize the center position
   const mapCenter = useMemo<[number, number]>(() => {
+    if (externalFilters?.lat && externalFilters?.lng) {
+      return [externalFilters.lat, externalFilters.lng];
+    }
     if (userPosition) {
       return [userPosition.latitude, userPosition.longitude];
     }
     return DEFAULT_CENTER;
-  }, [userPosition]);
+  }, [userPosition, externalFilters?.lat, externalFilters?.lng]);
+
+  // Recenter map when filters.lat/lng changes
+  useEffect(() => {
+    if (externalFilters?.lat && externalFilters?.lng && mapRef.current) {
+      mapRef.current.flyTo([externalFilters.lat, externalFilters.lng], 14, {
+        duration: 1.5,
+      });
+    }
+  }, [externalFilters?.lat, externalFilters?.lng]);
 
   // Handle bounds change from map events
   const handleBoundsChange = useCallback(
@@ -225,7 +237,7 @@ export default function CrimeMap({
     }) => {
       setBounds(bounds);
     },
-    [setBounds]
+    [setBounds],
   );
 
   // Handle locate me button

@@ -69,6 +69,12 @@ const navItems: NavItem[] = [
     roles: ["ADMIN", "SUPER_ADMIN"],
   },
   {
+    name: "Locations",
+    href: "/admin/locations",
+    icon: MapPin,
+    roles: ["ADMIN", "SUPER_ADMIN"],
+  },
+  {
     name: "Analytics",
     href: "/dashboard",
     icon: BarChart3,
@@ -97,7 +103,7 @@ export function Sidebar({
   const pathname = usePathname();
 
   const filteredItems = navItems.filter((item) =>
-    item.roles.includes(userRole)
+    item.roles.includes(userRole),
   );
 
   return (
@@ -105,7 +111,7 @@ export function Sidebar({
       className={cn(
         "flex h-full flex-col border-r bg-card transition-all duration-300",
         isCollapsed ? "w-16" : "w-64",
-        className
+        className,
       )}
     >
       {/* Header */}
@@ -150,7 +156,7 @@ export function Sidebar({
                 isActive
                   ? "bg-primary text-primary-foreground"
                   : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
-                isCollapsed && "justify-center px-2"
+                isCollapsed && "justify-center px-2",
               )}
               title={isCollapsed ? item.name : undefined}
             >

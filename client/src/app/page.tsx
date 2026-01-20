@@ -26,9 +26,9 @@ const CrimeMap = dynamic(() => import("@/components/map/CrimeMap"), {
 const RealTimeSidebar = dynamic(
   () =>
     import("@/components/dashboard/RealTimeSidebar").then(
-      (mod) => mod.RealTimeSidebar
+      (mod) => mod.RealTimeSidebar,
     ),
-  { ssr: false }
+  { ssr: false },
 );
 
 export default function DashboardPage() {
@@ -76,13 +76,33 @@ export default function DashboardPage() {
         <OverviewSidebar
           isOpen={isLeftSidebarOpen}
           onToggle={() => setLeftSidebarOpen(!isLeftSidebarOpen)}
+          onLocationSelect={(loc) => {
+            setFilters((prev) => ({
+              ...prev,
+              lat: loc.lat,
+              lng: loc.lng,
+              radius: 5,
+            }));
+          }}
+          onClear={() => {
+            setFilters((prev) => ({
+              ...prev,
+              lat: undefined,
+              lng: undefined,
+              radius: undefined,
+            }));
+          }}
         />
 
         {/* Map Area (Center) */}
         <div className="relative flex-1 bg-muted/10 flex flex-col min-w-0">
           <div className="relative flex-1 h-full w-full">
             {/* Filter Pills Overlay */}
-            <MapFilterPills filters={filters} onFilterChange={setFilters} />
+            <div className="absolute top-4 left-0 right-0 z-1000 flex flex-col items-center gap-4 pointer-events-none">
+              <div className="pointer-events-auto">
+                <MapFilterPills filters={filters} onFilterChange={setFilters} />
+              </div>
+            </div>
 
             {/* Map Component */}
             <CrimeMap
