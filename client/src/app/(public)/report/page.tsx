@@ -29,6 +29,7 @@ import { PrivateRoute } from "@/components/auth";
 import { useSubmitCrime } from "@/hooks/useCrimes";
 import { showSuccess, showError } from "@/lib/toast";
 import { CrimeType, Severity } from "@/types/api.types";
+import { BD_LOCATIONS } from "@/data/bd-divisions";
 
 const crimeTypeOptions = [
   { value: CrimeType.THEFT, label: "Theft" },
@@ -75,6 +76,8 @@ interface FormState {
   crimeType: CrimeType | "";
   severity: Severity | "";
   description: string;
+  division: string;
+  district: string;
   address: string;
   latitude: number;
   longitude: number;
@@ -91,6 +94,8 @@ function ReportCrimeContent() {
     crimeType: "",
     severity: "",
     description: "",
+    division: "",
+    district: "",
     address: "",
     latitude: 23.8103,
     longitude: 90.4125,
@@ -150,6 +155,16 @@ function ReportCrimeContent() {
       newErrors.occurredAt = "Please provide when the incident occurred";
 
     setErrors(newErrors);
+    if (formData.description.length < 20)
+      newErrors.description = "Description must be at least 20 characters";
+    if (!formData.division) newErrors.division = "Please select a division";
+    if (!formData.district) newErrors.district = "Please select a district";
+    if (formData.address.length < 5)
+      newErrors.address = "Please provide a valid address";
+    if (!formData.occurredAt)
+      newErrors.occurredAt = "Please provide when the incident occurred";
+
+    setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
@@ -189,6 +204,8 @@ function ReportCrimeContent() {
         crimeType: formData.crimeType,
         severity: formData.severity,
         description: formData.description,
+        division: formData.division,
+        district: formData.district,
         address: formData.address,
         latitude: formData.latitude,
         longitude: formData.longitude,
@@ -429,6 +446,58 @@ function ReportCrimeContent() {
                     <MapPin className="mr-2 size-4" />
                     Use My Location
                   </Button>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="division">Division *</Label>
+                    <select
+                      id="division"
+                      className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+                      value={formData.division}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          division: e.target.value,
+                          district: "", // Reset district when division changes
+                        })
+                      }
+                    >
+                      <option value="">Select Division</option>
+                      {Object.keys(BD_LOCATIONS).map((div) => (
+                        <option key={div} value={div}>
+                          {div}
+                        </option>
+                      ))}
+                    </select>
+                    {errors.division && (
+                      <p className="text-sm text-destructive">{errors.division}</p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="district">District *</Label>
+                    <select
+                      id="district"
+                      className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+                      value={formData.district}
+                      disabled={!formData.division}
+                      onChange={(e) =>
+                        setFormData({ ...formData, district: e.target.value })
+                      }
+                    >
+                      <option value="">Select District</option>
+                      {formData.division &&
+                        BD_LOCATIONS[formData.division]?.map((dist) => (
+                          <option key={dist} value={dist}>
+                            {dist}
+                          </option>
+                        ))}
+                    </select>
+                    {errors.district && (
+                      <p className="text-sm text-destructive">{errors.district}</p>
+                    )}
+                  </div>
                 </div>
 
                 <div className="space-y-2">
