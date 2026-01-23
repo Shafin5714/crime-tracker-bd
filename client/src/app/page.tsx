@@ -109,6 +109,7 @@ export default function DashboardPage() {
               showFilters={false}
               className="w-full h-full"
               filters={filters}
+              sidebarOpen={isLeftSidebarOpen || isRightSidebarOpen}
             />
           </div>
         </div>

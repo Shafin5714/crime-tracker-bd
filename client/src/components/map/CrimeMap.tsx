@@ -31,6 +31,7 @@ interface CrimeMapProps {
   onCrimeSelect?: (crime: CrimeReport) => void;
   initialFilters?: Partial<CrimeFilters>;
   filters?: Partial<CrimeFilters>;
+  sidebarOpen?: boolean; // Used to trigger map resize when sidebars toggle
 }
 
 // Component to handle map events and sync with bounds
@@ -138,6 +139,7 @@ export default function CrimeMap({
   onCrimeSelect,
   initialFilters = {},
   filters: externalFilters,
+  sidebarOpen,
 }: CrimeMapProps) {
   const mapRef = useRef<LeafletMap | null>(null);
   const {
@@ -234,6 +236,17 @@ export default function CrimeMap({
       );
     }
   }, [userPosition]);
+
+  // Invalidate map size when sidebar state changes
+  useEffect(() => {
+    if (mapRef.current) {
+      // Small delay to allow CSS transition to complete
+      const timeout = setTimeout(() => {
+        mapRef.current?.invalidateSize();
+      }, 350);
+      return () => clearTimeout(timeout);
+    }
+  }, [sidebarOpen]);
 
   return (
     <div className={`relative w-full h-full ${className}`}>
