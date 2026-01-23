@@ -12,7 +12,8 @@ import {
   XCircle,
 } from "lucide-react";
 
-import { useCrimes } from "@/hooks/useCrimes";
+import { useCrimes, useDeleteCrime } from "@/hooks/useCrimes";
+import { toast } from "sonner";
 import { ReportStatus, Severity } from "@/types/api.types";
 
 import { Button } from "@/components/ui/button";
@@ -62,6 +63,21 @@ export default function ReportsPage() {
     status,
     severity,
   });
+
+  const { mutate: deleteCrime } = useDeleteCrime();
+
+  const handleDelete = (id: string) => {
+    if (confirm("Are you sure you want to remove this report?")) {
+      deleteCrime(id, {
+        onSuccess: () => {
+          toast.success("Report removed successfully");
+        },
+        onError: () => {
+          toast.error("Failed to remove report");
+        },
+      });
+    }
+  };
 
   const handleStatusChange = (value: string) => {
     setStatus(value === "ALL" ? undefined : (value as ReportStatus));
@@ -286,7 +302,10 @@ export default function ReportsPage() {
                               <CheckCircle2 className="mr-2 size-4" />
                               Verify Report
                             </DropdownMenuItem>
-                            <DropdownMenuItem className="text-destructive">
+                            <DropdownMenuItem 
+                              className="text-destructive focus:text-destructive"
+                              onClick={() => handleDelete(report.id)}
+                            >
                               <XCircle className="mr-2 size-4" />
                               Remove Report
                             </DropdownMenuItem>
