@@ -45,13 +45,7 @@ export const useCurrentUser = () => {
       if (accessToken && refreshToken) {
         dispatch(
           setCredentials({
-            user: {
-              id: user.id,
-              email: user.email,
-              name: user.name || "",
-              role: user.role,
-              createdAt: user.createdAt,
-            },
+            user: user,
             accessToken,
             refreshToken,
           })
@@ -79,13 +73,7 @@ export const useLogin = () => {
       // Sync with Redux
       dispatch(
         setCredentials({
-          user: {
-            id: data.user.id,
-            email: data.user.email,
-            name: data.user.name || "",
-            role: data.user.role,
-            createdAt: data.user.createdAt,
-          },
+          user: data.user,
           accessToken: data.accessToken,
           refreshToken: data.refreshToken,
         })
@@ -116,13 +104,7 @@ export const useRegister = () => {
       // Sync with Redux
       dispatch(
         setCredentials({
-          user: {
-            id: data.user.id,
-            email: data.user.email,
-            name: data.user.name || "",
-            role: data.user.role,
-            createdAt: data.user.createdAt,
-          },
+          user: data.user,
           accessToken: data.accessToken,
           refreshToken: data.refreshToken,
         })
