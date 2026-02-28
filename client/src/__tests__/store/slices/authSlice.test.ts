@@ -6,7 +6,8 @@ import authReducer, {
   selectIsAuthenticated, 
   selectCurrentUser 
 } from '@/store/slices/authSlice'
-import { UserRole } from '@/types/api.types'
+import { UserRole, User } from '@/types/api.types'
+import type { RootState } from '@/store'
 
 describe('auth slice', () => {
   const initialState = {
@@ -15,11 +16,14 @@ describe('auth slice', () => {
     refreshToken: null,
   }
 
-  const mockUser = {
+  const mockUser: User = {
     id: '1',
     name: 'Test User',
     email: 'test@example.com',
     role: UserRole.USER,
+    isBanned: false,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   }
 
   it('should return the initial state', () => {
@@ -55,22 +59,37 @@ describe('auth slice', () => {
   })
 
   describe('selectors', () => {
-    const rootState = {
+    const rootState: RootState = {
       auth: {
         user: mockUser,
         accessToken: 'token',
         refreshToken: 'token',
+        _persist: { version: -1, rehydrated: true }
       },
-      ui: {} as any,
-      map: {} as any,
+      ui: {
+        isSidebarOpen: true,
+        isSidebarCollapsed: false,
+        activeModal: null,
+        theme: 'light',
+        _persist: { version: -1, rehydrated: true }
+      },
+      map: {
+        viewport: { center: [23.8, 90.4], zoom: 12, bounds: null },
+        filters: { crimeTypes: [], severities: [], status: [], startDate: null, endDate: null, radius: null },
+        selectedCrimeId: null,
+        userLocation: null,
+        isLocating: false,
+        showHeatmap: false,
+        showClusters: true
+      },
     }
 
     it('selectIsAuthenticated should return true if user and token exist', () => {
-      expect(selectIsAuthenticated(rootState as any)).toBe(true)
+      expect(selectIsAuthenticated(rootState)).toBe(true)
     })
 
     it('selectCurrentUser should return the user', () => {
-      expect(selectCurrentUser(rootState as any)).toEqual(mockUser)
+      expect(selectCurrentUser(rootState)).toEqual(mockUser)
     })
   })
 })

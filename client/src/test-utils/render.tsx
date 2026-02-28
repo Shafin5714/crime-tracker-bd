@@ -9,7 +9,6 @@ import { Provider } from "react-redux";
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { authReducer, uiReducer, mapReducer } from "@/store/slices";
-import type { RootState } from "@/store";
 
 const testRootReducer = combineReducers({
   auth: authReducer,
@@ -17,11 +16,13 @@ const testRootReducer = combineReducers({
   map: mapReducer,
 });
 
+export type TestRootState = ReturnType<typeof testRootReducer>;
+
 // Create a fresh store for each test to avoid state leakage
-const createTestStore = (preloadedState?: any) => {
+const createTestStore = (preloadedState?: Partial<TestRootState>) => {
   return configureStore({
     reducer: testRootReducer,
-    preloadedState,
+    preloadedState: preloadedState as unknown as TestRootState,
   });
 };
 
@@ -37,7 +38,7 @@ const createTestQueryClient = () =>
 
 interface AllTheProvidersProps {
   children: React.ReactNode;
-  preloadedState?: any;
+  preloadedState?: Partial<TestRootState>;
   queryClient?: QueryClient;
 }
 
@@ -58,7 +59,7 @@ const AllTheProviders = ({
 const customRender = (
   ui: ReactElement,
   options?: Omit<RenderOptions, "wrapper"> & {
-    preloadedState?: any;
+    preloadedState?: Partial<TestRootState>;
   },
 ) => {
   const { preloadedState, ...renderOptions } = options || {};
@@ -74,7 +75,7 @@ const customRender = (
 const customRenderHook = <Result, Props>(
   render: (props: Props) => Result,
   options?: Omit<RenderHookOptions<Props>, "wrapper"> & {
-    preloadedState?: any;
+    preloadedState?: Partial<TestRootState>;
   },
 ) => {
   const { preloadedState, ...renderOptions } = options || {};

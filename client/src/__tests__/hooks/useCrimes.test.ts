@@ -1,9 +1,9 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect } from 'vitest'
 import { renderHook, waitFor } from '@/test-utils/render'
 import { useCrimes, useSubmitCrime } from '@/hooks/useCrimes'
 import { server } from '@/test-utils/mocks/server'
 import { http, HttpResponse } from 'msw'
-import { CrimeType, Severity } from '@/types/api.types'
+import { CrimeType, Severity, CreateCrimeRequest, CrimeReport } from '@/types/api.types'
 
 describe('useCrimes hook', () => {
   it('should fetch crimes and return data', async () => {
@@ -30,7 +30,7 @@ describe('useCrimes hook', () => {
   })
 
   it('should handle crime submission', async () => {
-    const newCrime = {
+    const newCrime: CreateCrimeRequest = {
       crimeType: CrimeType.ROBBERY,
       description: 'New robbery',
       severity: Severity.HIGH,
@@ -50,12 +50,12 @@ describe('useCrimes hook', () => {
 
     const { result } = renderHook(() => useSubmitCrime())
 
-    let submittedData;
-    await result.current.mutateAsync(newCrime as any).then(data => {
+    let submittedData: CrimeReport | undefined;
+    await result.current.mutateAsync(newCrime).then(data => {
       submittedData = data;
     });
 
     expect(submittedData).toBeDefined();
-    expect((submittedData as any).id).toBe('new-123');
+    expect(submittedData?.id).toBe('new-123');
   })
 })

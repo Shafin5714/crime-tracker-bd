@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect } from 'vitest'
 import { renderHook, waitFor } from '@/test-utils/render'
 import { useAuth } from '@/hooks/useAuth'
 import { server } from '@/test-utils/mocks/server'
@@ -28,7 +28,15 @@ describe('useAuth hook', () => {
     // Start with authenticated state
     const preloadedState = {
       auth: {
-        user: { id: '1', email: 'test@example.com', name: 'Test', role: UserRole.USER as any },
+        user: { 
+          id: '1', 
+          email: 'test@example.com', 
+          name: 'Test', 
+          role: UserRole.USER,
+          isBanned: false,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        },
         accessToken: 'token',
         refreshToken: 'token',
       }
@@ -54,7 +62,15 @@ describe('useAuth hook', () => {
   it('should correctly check roles with hasRole', () => {
     const preloadedState = {
       auth: {
-        user: { id: '1', email: 'admin@example.com', name: 'Admin', role: UserRole.ADMIN as any },
+        user: { 
+          id: '1', 
+          email: 'admin@example.com', 
+          name: 'Admin', 
+          role: UserRole.ADMIN,
+          isBanned: false,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        },
         accessToken: 'token',
         refreshToken: 'token',
       }
