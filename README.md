@@ -1,6 +1,23 @@
-# Crime Tracker BD 🚨
+<div align="center">
 
-Full-stack crime reporting platform with interactive map visualization, community-driven verification, and real-time alerts — built for Bangladesh.
+# 🚨 Crime Tracker BD
+
+**Full-stack crime reporting platform with interactive map visualization, community-driven verification, and real-time alerts — built for Bangladesh.**
+
+![Next.js](https://img.shields.io/badge/Next.js-16.1-000000?style=for-the-badge&logo=next.js&logoColor=white)
+![React](https://img.shields.io/badge/React-19.2-61DAFB?style=for-the-badge&logo=react&logoColor=black)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![Express](https://img.shields.io/badge/Express-4.21-000000?style=for-the-badge&logo=express&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-PostGIS-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
+![Prisma](https://img.shields.io/badge/Prisma-6.2-2D3748?style=for-the-badge&logo=prisma&logoColor=white)
+![Redux](https://img.shields.io/badge/Redux_Toolkit-2.11-764ABC?style=for-the-badge&logo=redux&logoColor=white)
+![Socket.IO](https://img.shields.io/badge/Socket.IO-4.8-010101?style=for-the-badge&logo=socket.io&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
+![Leaflet](https://img.shields.io/badge/Leaflet-1.9-199900?style=for-the-badge&logo=leaflet&logoColor=white)
+
+[Features](#key-features) · [Tech Stack](#technical-highlights) · [Architecture](#architecture) · [Getting Started](#getting-started) · [API Reference](#api-documentation)
+
+</div>
 
 ## About
 
