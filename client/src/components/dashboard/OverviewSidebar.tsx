@@ -5,11 +5,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  MOCK_OVERVIEW_STATS,
-  MOCK_REGIONAL_DATA,
-  MOCK_TYPE_DISTRIBUTION,
-} from "@/data/mockData";
+import { useCrimeStats } from "@/hooks/useCrimes";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useSearchArea } from "@/hooks/useAreas";
 import { useDebounce } from "@/hooks/useDebounce";
 import {
@@ -59,6 +56,7 @@ export function OverviewSidebar({
     useSearchArea(debouncedQuery);
   const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
   const [showResults, setShowResults] = useState(false);
+  const { data: statsData, isLoading: isStatsLoading } = useCrimeStats();
 
   const handleRegionSelect = (region: string) => {
     // This is for the static popular areas
@@ -232,13 +230,19 @@ export function OverviewSidebar({
                 <div className="text-xs text-muted-foreground mb-1">
                   Total Incidents
                 </div>
-                <div className="text-2xl font-bold">
-                  {MOCK_OVERVIEW_STATS.totalIncidents}
-                </div>
-                <div className="flex items-center text-xs mt-1 text-green-500">
-                  <ArrowUp className="h-3 w-3 mr-0.5" />
-                  {MOCK_OVERVIEW_STATS.totalIncidentsChange}%
-                </div>
+                {isStatsLoading ? (
+                  <Skeleton className="h-8 w-16" />
+                ) : (
+                  <>
+                    <div className="text-2xl font-bold">
+                      {statsData?.overview?.totalIncidents || 0}
+                    </div>
+                    <div className="flex items-center text-xs mt-1 text-green-500">
+                      <ArrowUp className="h-3 w-3 mr-0.5" />
+                      {statsData?.overview?.totalIncidentsChange || 0}%
+                    </div>
+                  </>
+                )}
               </CardContent>
             </Card>
 
@@ -247,15 +251,19 @@ export function OverviewSidebar({
                 <div className="text-xs text-muted-foreground mb-1">
                   High Priority
                 </div>
-                <div className="text-2xl font-bold">
-                  {MOCK_OVERVIEW_STATS.highPriority}
-                </div>
-                <div className="flex items-center text-xs mt-1 text-red-500">
-                  <ArrowDown className="h-3 w-3 mr-0.5" />
-                  {Math.abs(MOCK_OVERVIEW_STATS.highPriorityChange)} (
-                  {MOCK_OVERVIEW_STATS.highPriorityChange > 0 ? "+" : ""}
-                  {MOCK_OVERVIEW_STATS.highPriorityChange})
-                </div>
+                {isStatsLoading ? (
+                  <Skeleton className="h-8 w-16" />
+                ) : (
+                  <>
+                    <div className="text-2xl font-bold">
+                      {statsData?.overview?.highPriority || 0}
+                    </div>
+                    <div className="flex items-center text-xs mt-1 text-red-500">
+                      <ArrowDown className="h-3 w-3 mr-0.5" />
+                      {Math.abs(statsData?.overview?.highPriorityChange || 0)} ({(statsData?.overview?.highPriorityChange || 0) > 0 ? "+" : ""}{statsData?.overview?.highPriorityChange || 0})
+                    </div>
+                  </>
+                )}
               </CardContent>
             </Card>
           </div>
@@ -266,29 +274,41 @@ export function OverviewSidebar({
               Regional Breakdown
             </h4>
             <div className="space-y-2">
-              {MOCK_REGIONAL_DATA.map((region) => (
-                <div
-                  key={region.region}
-                  className="flex items-center justify-between p-2 rounded-md bg-muted/30 hover:bg-muted/50 transition-colors"
-                >
-                  <span className="text-sm font-medium">{region.region}</span>
-                  <div className="flex items-center gap-3">
-                    <span className="text-sm">{region.count}</span>
-                    <span
-                      className={`text-xs ${
-                        region.change > 0 ? "text-orange-500" : "text-green-500"
-                      }`}
-                    >
-                      ({region.change > 0 ? "+" : ""}
-                      {region.change})
-                    </span>
+              {isStatsLoading ? (
+                <>
+                  <Skeleton className="h-8 w-full" />
+                  <Skeleton className="h-8 w-full" />
+                  <Skeleton className="h-8 w-full" />
+                </>
+              ) : statsData?.regionalData?.length ? (
+                statsData.regionalData.map((region) => (
+                  <div
+                    key={region.region}
+                    className="flex items-center justify-between p-2 rounded-md bg-muted/30 hover:bg-muted/50 transition-colors"
+                  >
+                    <span className="text-sm font-medium">{region.region}</span>
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm">{region.count}</span>
+                      <span
+                        className={`text-xs ${
+                          region.change > 0 ? "text-orange-500" : "text-green-500"
+                        }`}
+                      >
+                        ({region.change > 0 ? "+" : ""}
+                        {region.change})
+                      </span>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))
+              ) : (
+                <div className="text-xs text-muted-foreground text-center py-2">No regional data available.</div>
+              )}
             </div>
-            <button className="w-full text-center text-xs text-primary mt-3 hover:underline">
-              View All Regions
-            </button>
+            {statsData?.regionalData && statsData.regionalData.length > 5 && (
+              <button className="w-full text-center text-xs text-primary mt-3 hover:underline">
+                View All Regions
+              </button>
+            )}
           </div>
 
           {/* Incident Type Distribution */}
@@ -297,17 +317,26 @@ export function OverviewSidebar({
               Incident Type Distribution
             </h4>
             <div className="space-y-4">
-              {MOCK_TYPE_DISTRIBUTION.map((item) => (
-                <div key={item.type}>
-                  <div className="flex justify-between items-center mb-1.5">
-                    <span className="text-sm font-medium">{item.type}</span>
-                    <span className="text-xs text-muted-foreground">
-                      {item.percentage}%
-                    </span>
+              {isStatsLoading ? (
+                <>
+                  <div className="space-y-1"><Skeleton className="h-4 w-full" /><Skeleton className="h-2 w-full" /></div>
+                  <div className="space-y-1"><Skeleton className="h-4 w-full" /><Skeleton className="h-2 w-full" /></div>
+                </>
+              ) : statsData?.typeDistribution?.length ? (
+                statsData.typeDistribution.slice(0, 5).map((item) => (
+                  <div key={item.type}>
+                    <div className="flex justify-between items-center mb-1.5">
+                      <span className="text-sm font-medium capitalize">{item.type.toLowerCase()}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {item.percentage}%
+                      </span>
+                    </div>
+                    <Progress value={item.percentage} className="h-2" />
                   </div>
-                  <Progress value={item.percentage} className="h-2" />
-                </div>
-              ))}
+                ))
+              ) : (
+                <div className="text-xs text-muted-foreground text-center py-2">No type distribution data.</div>
+              )}
             </div>
           </div>
         </div>

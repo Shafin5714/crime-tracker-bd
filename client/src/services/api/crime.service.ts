@@ -13,6 +13,7 @@ import type {
   HeatmapPoint,
   PaginatedResponse,
   ApiSuccessResponse,
+  CrimeStatsResponse,
 } from "@/types/api.types";
 
 const CRIMES_BASE = "/crimes";
@@ -107,6 +108,17 @@ export const crimeService = {
       : `${CRIMES_BASE}/heatmap`;
     const response = await apiClient.get<ApiSuccessResponse<HeatmapPoint[]>>(
       url
+    );
+    return response.data.data;
+  },
+
+  /**
+   * Get aggregated crime statistics
+   */
+  async getCrimeStats(division?: string): Promise<CrimeStatsResponse> {
+    const queryString = division ? `?division=${encodeURIComponent(division)}` : "";
+    const response = await apiClient.get<ApiSuccessResponse<CrimeStatsResponse>>(
+      `${CRIMES_BASE}/stats${queryString}`
     );
     return response.data.data;
   },

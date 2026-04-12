@@ -24,6 +24,7 @@ export const crimeKeys = {
   heatmaps: () => [...crimeKeys.all, "heatmap"] as const,
   heatmap: (filters: HeatmapFilters) =>
     [...crimeKeys.heatmaps(), filters] as const,
+  stats: (division?: string) => [...crimeKeys.all, "stats", division] as const,
 };
 
 /**
@@ -54,6 +55,16 @@ export const useHeatmapData = (filters: HeatmapFilters = {}) => {
   return useQuery({
     queryKey: crimeKeys.heatmap(filters),
     queryFn: () => crimeService.getHeatmapData(filters),
+  });
+};
+
+/**
+ * Hook to get aggregated crime statistics
+ */
+export const useCrimeStats = (division?: string) => {
+  return useQuery({
+    queryKey: crimeKeys.stats(division),
+    queryFn: () => crimeService.getCrimeStats(division),
   });
 };
 

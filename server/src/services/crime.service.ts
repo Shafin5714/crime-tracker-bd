@@ -397,52 +397,66 @@ export const getCrimeStats = async (division?: string) => {
 
   if (division) where.division = division;
 
-  const [byType, bySeverity, byStatus, total, recentReports] =
-    await Promise.all([
-      prisma.crimeReport.groupBy({
-        by: ["crimeType"],
-        where,
-        _count: true,
-      }),
-      prisma.crimeReport.groupBy({
-        by: ["severity"],
-        where,
-        _count: true,
-      }),
-      prisma.crimeReport.groupBy({
-        by: ["status"],
-        _count: true,
-      }),
-      prisma.crimeReport.count({ where }),
-      prisma.crimeReport.findMany({
-        where,
-        orderBy: { createdAt: "desc" },
-        take: 5,
-        select: {
-          id: true,
-          crimeType: true,
-          severity: true,
-          address: true,
-          createdAt: true,
-        },
-      }),
-    ]);
+  const [byTypeRaw, bySeverityRaw, byDivisionRaw, total] = await Promise.all([
+    prisma.crimeReport.groupBy({
+      by: ["crimeType"],
+      where,
+      _count: true,
+    }),
+    prisma.crimeReport.groupBy({
+      by: ["severity"],
+      where,
+      _count: true,
+    }),
+    prisma.crimeReport.groupBy({
+      by: ["division"],
+      where,
+      _count: true,
+    }),
+    prisma.crimeReport.count({ where }),
+  ]);
+
+  // Aggregate high priority (HIGH + CRITICAL)
+  const highPriority = bySeverityRaw
+    .filter((s) => s.severity === "HIGH" || s.severity === "CRITICAL")
+    .reduce((sum, item) => sum + item._count, 0);
+
+  // Parse Regional Data (take top 5, rest "Other")
+  let sortedRegions = byDivisionRaw
+    .map((d) => ({
+      region: d.division || "Unknown",
+      count: d._count,
+      change: 0, // Temporarily frozen for MVP
+    }))
+    .sort((a, b) => b.count - a.count);
+
+  if (sortedRegions.length > 5) {
+    const topRegions = sortedRegions.slice(0, 4);
+    const otherCount = sortedRegions
+      .slice(4)
+      .reduce((sum, item) => sum + item.count, 0);
+    topRegions.push({ region: "Other", count: otherCount, change: 0 });
+    sortedRegions = topRegions;
+  }
+
+  // Parse Type Distribution percentages
+  const typeDistribution = byTypeRaw
+    .map((t) => ({
+      type: t.crimeType.replace(/_/g, " "),
+      percentage: total > 0 ? Math.round((t._count / total) * 100) : 0,
+      count: t._count,
+    }))
+    .sort((a, b) => b.percentage - a.percentage);
 
   return {
-    total,
-    byType: byType.map((item) => ({
-      type: item.crimeType,
-      count: item._count,
-    })),
-    bySeverity: bySeverity.map((item) => ({
-      severity: item.severity,
-      count: item._count,
-    })),
-    byStatus: byStatus.map((item) => ({
-      status: item.status,
-      count: item._count,
-    })),
-    recentReports,
+    overview: {
+      totalIncidents: total,
+      totalIncidentsChange: 0,
+      highPriority,
+      highPriorityChange: 0,
+    },
+    regionalData: sortedRegions,
+    typeDistribution,
   };
 };
 

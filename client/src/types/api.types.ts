@@ -159,6 +159,25 @@ export interface ValidateCrimeRequest {
   comment?: string;
 }
 
+export interface CrimeStatsResponse {
+  overview: {
+    totalIncidents: number;
+    totalIncidentsChange: number;
+    highPriority: number;
+    highPriorityChange: number;
+  };
+  regionalData: Array<{
+    region: string;
+    count: number;
+    change: number;
+  }>;
+  typeDistribution: Array<{
+    type: string;
+    percentage: number;
+    count: number;
+  }>;
+}
+
 export interface CrimeFilters {
   // Pagination
   page?: number;
