@@ -51,12 +51,13 @@ export const deleteArea = async (id: string) => {
 };
 
 export const findAreaByName = async (name: string) => {
-  return prisma.area.findFirst({
+  return prisma.area.findMany({
     where: {
       name: {
         contains: name,
         mode: "insensitive",
       },
     },
+    take: 10,
   });
 };

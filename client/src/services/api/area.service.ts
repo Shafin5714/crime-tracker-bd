@@ -30,8 +30,8 @@ export const areaService = {
   /**
    * Search area by name
    */
-  async searchArea(query: string): Promise<Area | null> {
-    const response = await apiClient.get<{ data: Area | null }>(
+  async searchArea(query: string): Promise<Area[]> {
+    const response = await apiClient.get<{ data: Area[] }>(
       `${AREAS_BASE}/search?q=${encodeURIComponent(query)}`,
     );
     return response.data.data;

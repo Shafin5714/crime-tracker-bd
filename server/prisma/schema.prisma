@@ -136,7 +136,7 @@ model CrimeValidation {
 
 model Area {
   id        String   @id @default(cuid())
-  name      String   @unique
+  name      String
   latitude  Float
   longitude Float
   district  String?  @default("Dhaka")

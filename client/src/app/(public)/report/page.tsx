@@ -24,12 +24,14 @@ import {
   Link as LinkIcon,
   Plus,
   X,
+  Search,
 } from "lucide-react";
 import { PrivateRoute } from "@/components/auth";
 import { useSubmitCrime } from "@/hooks/useCrimes";
 import { showSuccess, showError } from "@/lib/toast";
 import { CrimeType, Severity } from "@/types/api.types";
-import { BD_LOCATIONS } from "@/data/bd-divisions";
+import { useSearchArea } from "@/hooks/useAreas";
+import { useDebounce } from "@/hooks/useDebounce";
 
 const crimeTypeOptions = [
   { value: CrimeType.THEFT, label: "Theft" },
@@ -106,6 +108,24 @@ function ReportCrimeContent() {
 
   const [mediaInput, setMediaInput] = React.useState("");
 
+  const [searchQuery, setSearchQuery] = React.useState("");
+  const debouncedQuery = useDebounce(searchQuery, 300);
+  const { data: areas, isLoading: isSearchLoading } = useSearchArea(debouncedQuery);
+  const [showResults, setShowResults] = React.useState(false);
+
+  const handleAreaSelect = (area: any) => {
+    setFormData(prev => ({
+      ...prev,
+      latitude: area.latitude,
+      longitude: area.longitude,
+      district: area.district || "",
+      division: area.division || "",
+      address: area.name,
+    }));
+    setSearchQuery(area.name);
+    setShowResults(false);
+  };
+
   const addMedia = () => {
     if (!mediaInput) return;
 
@@ -157,8 +177,7 @@ function ReportCrimeContent() {
     setErrors(newErrors);
     if (formData.description.length < 20)
       newErrors.description = "Description must be at least 20 characters";
-    if (!formData.division) newErrors.division = "Please select a division";
-    if (!formData.district) newErrors.district = "Please select a district";
+    if (!formData.division) newErrors.division = "Please search and select a specific area";
     if (formData.address.length < 5)
       newErrors.address = "Please provide a valid address";
     if (!formData.occurredAt)
@@ -448,54 +467,84 @@ function ReportCrimeContent() {
                   </Button>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="division">Division *</Label>
-                    <select
-                      id="division"
-                      className="w-full rounded-md border bg-background px-3 py-2 text-sm"
-                      value={formData.division}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          division: e.target.value,
-                          district: "", // Reset district when division changes
-                        })
-                      }
-                    >
-                      <option value="">Select Division</option>
-                      {Object.keys(BD_LOCATIONS).map((div) => (
-                        <option key={div} value={div}>
-                          {div}
-                        </option>
-                      ))}
-                    </select>
+                <div className="space-y-4">
+                  <div className="space-y-2 relative">
+                    <Label htmlFor="areaSearch">Search Region / Area *</Label>
+                    <div className="relative">
+                      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                        {isSearchLoading ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Search className="h-4 w-4" />
+                        )}
+                      </div>
+                      <Input
+                        id="areaSearch"
+                        type="text"
+                        placeholder="Search for an area, upazila, or district..."
+                        value={searchQuery}
+                        onChange={(e) => {
+                          setSearchQuery(e.target.value);
+                          setShowResults(true);
+                        }}
+                        className="pl-9"
+                      />
+                      {searchQuery && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSearchQuery("");
+                            setShowResults(false);
+                            setFormData(prev => ({
+                              ...prev,
+                              district: "",
+                              division: "",
+                              address: "",
+                            }));
+                          }}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                        >
+                          <X className="h-3.5 w-3.5" />
+                        </button>
+                      )}
+                    </div>
                     {errors.division && (
                       <p className="text-sm text-destructive">{errors.division}</p>
                     )}
-                  </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="district">District *</Label>
-                    <select
-                      id="district"
-                      className="w-full rounded-md border bg-background px-3 py-2 text-sm"
-                      value={formData.district}
-                      disabled={!formData.division}
-                      onChange={(e) =>
-                        setFormData({ ...formData, district: e.target.value })
-                      }
-                    >
-                      <option value="">Select District</option>
-                      {formData.division &&
-                        BD_LOCATIONS[formData.division]?.map((dist) => (
-                          <option key={dist} value={dist}>
-                            {dist}
-                          </option>
-                        ))}
-                    </select>
-                    {errors.district && (
-                      <p className="text-sm text-destructive">{errors.district}</p>
+                    {showResults && debouncedQuery.length >= 2 && (
+                      <div className="absolute top-full left-0 right-0 mt-1 bg-card border rounded-lg shadow-lg overflow-hidden z-50">
+                        {isSearchLoading ? (
+                          <div className="p-3 text-center">
+                            <Loader2 className="h-4 w-4 animate-spin mx-auto text-muted-foreground" />
+                          </div>
+                        ) : areas && areas.length > 0 ? (
+                          <div className="max-h-60 overflow-y-auto">
+                            {areas.map((area) => (
+                              <button
+                                key={area.id}
+                                type="button"
+                                onClick={() => handleAreaSelect(area)}
+                                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-muted/50 transition-colors border-b last:border-0"
+                              >
+                                <MapPin className="h-3.5 w-3.5 text-primary shrink-0" />
+                                <div className="flex flex-col min-w-0">
+                                  <span className="truncate">{area.name}</span>
+                                  {area.district && (
+                                    <span className="text-[10px] text-muted-foreground truncate">
+                                      {area.district}, {area.division}
+                                    </span>
+                                  )}
+                                </div>
+                              </button>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="p-3 text-sm text-muted-foreground text-center bg-muted/10">
+                            No places found for &quot;{debouncedQuery}&quot;
+                          </div>
+                        )}
+                      </div>
                     )}
                   </div>
                 </div>

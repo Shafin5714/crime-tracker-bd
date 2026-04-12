@@ -40,26 +40,26 @@ Crime Tracker BD is a production-grade web application that enables citizens to 
 
 ## Technical Highlights
 
-| Area | Implementation |
-|---|---|
-| **Architecture** | Monorepo with npm workspaces — decoupled Next.js 16 frontend, Express.js REST API, and shared type contracts |
-| **Database** | PostgreSQL + PostGIS via Prisma ORM with optimized geospatial, temporal, and composite indexing |
-| **API Design** | RESTful endpoints with Swagger/OpenAPI 3.0 docs, Zod schema validation, rate limiting, and structured error handling |
-| **Auth** | JWT authentication with bcrypt hashing and hierarchical RBAC middleware |
-| **Mapping** | Leaflet + React-Leaflet with marker clustering, custom markers, filter overlays, and a location picker component |
-| **State Management** | Redux Toolkit (client state with persistence) + TanStack React Query (server state, caching, optimistic updates) |
-| **Real-Time** | Socket.IO integration for live event streaming |
-| **UI** | shadcn/ui + Radix UI primitives, Tailwind CSS v4, next-themes for dark mode |
-| **Testing** | Jest + Supertest (API integration tests) · Vitest + React Testing Library + MSW (frontend unit/component tests) |
-| **Security** | Helmet headers, CORS, rate limiting, DOMPurify XSS protection, input sanitization |
-| **i18n** | next-intl for multi-language support |
-| **DX** | Concurrent dev servers, Prisma Studio, database seeding, env validation via @t3-oss/env |
+| Area                 | Implementation                                                                                                       |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| **Architecture**     | Monorepo with npm workspaces — decoupled Next.js 16 frontend, Express.js REST API, and shared type contracts         |
+| **Database**         | PostgreSQL + PostGIS via Prisma ORM with optimized geospatial, temporal, and composite indexing                      |
+| **API Design**       | RESTful endpoints with Swagger/OpenAPI 3.0 docs, Zod schema validation, rate limiting, and structured error handling |
+| **Auth**             | JWT authentication with bcrypt hashing and hierarchical RBAC middleware                                              |
+| **Mapping**          | Leaflet + React-Leaflet with marker clustering, custom markers, filter overlays, and a location picker component     |
+| **State Management** | Redux Toolkit (client state with persistence) + TanStack React Query (server state, caching, optimistic updates)     |
+| **Real-Time**        | Socket.IO integration for live event streaming                                                                       |
+| **UI**               | shadcn/ui + Radix UI primitives, Tailwind CSS v4, next-themes for dark mode                                          |
+| **Testing**          | Jest + Supertest (API integration tests) · Vitest + React Testing Library + MSW (frontend unit/component tests)      |
+| **Security**         | Helmet headers, CORS, rate limiting, DOMPurify XSS protection, input sanitization                                    |
+| **i18n**             | next-intl for multi-language support                                                                                 |
+| **DX**               | Concurrent dev servers, Prisma Studio, database seeding, env validation via @t3-oss/env                              |
 
 ## Architecture
 
 ```
 ┌───────────────────────────────────────────────────────────┐
-│                   MONOREPO (npm workspaces)                │
+│                   MONOREPO (npm workspaces)               │
 ├─────────────────┬───────────────────┬─────────────────────┤
 │    client/      │     server/       │      shared/        │
 │                 │                   │                     │
@@ -72,7 +72,7 @@ Crime Tracker BD is a production-grade web application that enables citizens to 
 │  shadcn/ui      │  Jest + Supertest │                     │
 │  Vitest + MSW   │                   │                     │
 ├─────────────────┴───────────────────┴─────────────────────┤
-│              PostgreSQL + PostGIS (Neon)                    │
+│              PostgreSQL + PostGIS (Neon)                  │
 └───────────────────────────────────────────────────────────┘
 ```
 
@@ -140,12 +140,12 @@ npm run db:seed
 
 Creates test users for all roles:
 
-| Email | Password | Role |
-|---|---|---|
+| Email                      | Password       | Role        |
+| -------------------------- | -------------- | ----------- |
 | superadmin@crimetracker.bd | SuperAdmin@123 | SUPER_ADMIN |
-| admin@crimetracker.bd | Admin@123 | ADMIN |
-| moderator@crimetracker.bd | Moderator@123 | MODERATOR |
-| user@crimetracker.bd | User@123 | USER |
+| admin@crimetracker.bd      | Admin@123      | ADMIN       |
+| moderator@crimetracker.bd  | Moderator@123  | MODERATOR   |
+| user@crimetracker.bd       | User@123       | USER        |
 
 ### 5. Start Development
 
@@ -158,17 +158,17 @@ npm run dev
 
 ## Available Scripts
 
-| Command | Description |
-|---|---|
-| `npm run dev` | Start both client and server concurrently |
-| `npm run dev:client` | Start only the Next.js frontend |
-| `npm run dev:server` | Start only the Express.js backend |
-| `npm run build` | Build all workspaces |
-| `npm run lint` | Lint all workspaces |
-| `npm run db:generate` | Generate Prisma client |
-| `npm run db:push` | Push schema to database |
-| `npm run db:studio` | Open Prisma Studio |
-| `npm run db:seed` | Seed database with test users |
+| Command               | Description                               |
+| --------------------- | ----------------------------------------- |
+| `npm run dev`         | Start both client and server concurrently |
+| `npm run dev:client`  | Start only the Next.js frontend           |
+| `npm run dev:server`  | Start only the Express.js backend         |
+| `npm run build`       | Build all workspaces                      |
+| `npm run lint`        | Lint all workspaces                       |
+| `npm run db:generate` | Generate Prisma client                    |
+| `npm run db:push`     | Push schema to database                   |
+| `npm run db:studio`   | Open Prisma Studio                        |
+| `npm run db:seed`     | Seed database with test users             |
 
 ## API Documentation
 
@@ -176,12 +176,12 @@ The backend API is documented using **Swagger/OpenAPI 3.0**. With the server run
 
 📖 **Swagger UI**: [http://localhost:5000/api-docs](http://localhost:5000/api-docs)
 
-| Tag | Description |
-|---|---|
-| Auth | Registration, login, token refresh |
+| Tag    | Description                                        |
+| ------ | -------------------------------------------------- |
+| Auth   | Registration, login, token refresh                 |
 | Crimes | CRUD operations, filtering, validation, moderation |
-| Users | User management, role assignment, banning |
-| Areas | Location/area management |
+| Users  | User management, role assignment, banning          |
+| Areas  | Location/area management                           |
 
 ## Documentation
 

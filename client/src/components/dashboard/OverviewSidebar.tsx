@@ -55,7 +55,7 @@ export function OverviewSidebar({
 }: OverviewSidebarProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedQuery = useDebounce(searchQuery, 300);
-  const { data: area, isLoading: isSearchLoading } =
+  const { data: areas, isLoading: isSearchLoading } =
     useSearchArea(debouncedQuery);
   const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
   const [showResults, setShowResults] = useState(false);
@@ -158,19 +158,26 @@ export function OverviewSidebar({
                   <div className="p-3 text-center">
                     <Loader2 className="h-4 w-4 animate-spin mx-auto text-muted-foreground" />
                   </div>
-                ) : area ? (
-                  <button
-                    onClick={() => handleAreaSelect(area)}
-                    className="w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-muted/50 transition-colors"
-                  >
-                    <MapPin className="h-3.5 w-3.5 text-primary" />
-                    <div className="flex flex-col">
-                      <span>{area.name}</span>
-                      <span className="text-[10px] text-muted-foreground">
-                        {area.district}, {area.division}
-                      </span>
-                    </div>
-                  </button>
+                ) : areas && areas.length > 0 ? (
+                  <div className="max-h-60 overflow-y-auto">
+                    {areas.map((area) => (
+                      <button
+                        key={area.id}
+                        onClick={() => handleAreaSelect(area)}
+                        className="w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-muted/50 transition-colors border-b last:border-0"
+                      >
+                        <MapPin className="h-3.5 w-3.5 text-primary shrink-0" />
+                        <div className="flex flex-col min-w-0">
+                          <span className="truncate">{area.name}</span>
+                          {area.district && (
+                            <span className="text-[10px] text-muted-foreground truncate">
+                              {area.district}, {area.division}
+                            </span>
+                          )}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
                 ) : (
                   <div className="p-3 text-sm text-muted-foreground text-center bg-muted/10">
                     No places found for &quot;{debouncedQuery}&quot;
