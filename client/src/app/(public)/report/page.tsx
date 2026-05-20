@@ -29,7 +29,7 @@ import {
 import { PrivateRoute } from "@/components/auth";
 import { useSubmitCrime } from "@/hooks/useCrimes";
 import { showSuccess, showError } from "@/lib/toast";
-import { CrimeType, Severity } from "@/types/api.types";
+import { CrimeType, Severity, Area } from "@/types/api.types";
 import { useSearchArea } from "@/hooks/useAreas";
 import { useDebounce } from "@/hooks/useDebounce";
 
@@ -113,7 +113,7 @@ function ReportCrimeContent() {
   const { data: areas, isLoading: isSearchLoading } = useSearchArea(debouncedQuery);
   const [showResults, setShowResults] = React.useState(false);
 
-  const handleAreaSelect = (area: any) => {
+  const handleAreaSelect = (area: Area) => {
     setFormData(prev => ({
       ...prev,
       latitude: area.latitude,

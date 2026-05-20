@@ -82,7 +82,7 @@ function ModerationContent() {
     batchValidateCrime(
       { ids: selectedIds, type },
       {
-        onSuccess: (res: any) => {
+        onSuccess: (res) => {
           const successCount = res?.results?.length ?? 0;
           const failCount = res?.errors?.length ?? 0;
           

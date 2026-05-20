@@ -225,12 +225,12 @@ export const crimeService = {
     ids: string[],
     type: "CONFIRM" | "DENY"
   ): Promise<{
-    results: any[];
-    errors: any[];
+    results: Array<{ reportId: string; success: boolean }>;
+    errors: Array<{ reportId: string; success: boolean; message: string }>;
   }> {
     const response = await apiClient.post<ApiSuccessResponse<{
-      results: any[];
-      errors: any[];
+      results: Array<{ reportId: string; success: boolean }>;
+      errors: Array<{ reportId: string; success: boolean; message: string }>;
     }>>(`${CRIMES_BASE}/batch-validate`, { ids, type });
     return response.data.data;
   },

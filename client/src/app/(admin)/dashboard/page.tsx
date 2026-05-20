@@ -18,7 +18,6 @@ import {
   AlertTriangle,
   TrendingUp,
   Calendar,
-  BarChart3,
   PieChart,
   Activity,
   ArrowUpRight,
