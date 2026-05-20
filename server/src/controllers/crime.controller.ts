@@ -8,6 +8,10 @@ import {
   validateCrimeReport,
   getHeatmapData,
   getCrimeStats,
+  batchValidateCrimeReports,
+  getModerationStats,
+  getCrimeTrends,
+  getAdminActivity,
 } from "../services/crime.service";
 import {
   CreateCrimeInput,
@@ -15,6 +19,7 @@ import {
   ValidateCrimeInput,
   listCrimesQuerySchema,
   heatmapQuerySchema,
+  batchValidateCrimeSchema,
 } from "../schemas/crime.schema";
 import { AuthRequest } from "./auth.controller";
 import { UnauthorizedError } from "../utils/errors";
@@ -133,6 +138,56 @@ export const stats = async (req: Request, res: Response, next: NextFunction) => 
     const { division } = req.query;
     const data = await getCrimeStats(division as string | undefined);
 
+    res.json({ data });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Batch validate crime reports (MODERATOR+)
+export const batchValidate = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user?.userId;
+    if (!userId) {
+      throw new UnauthorizedError("Authentication required");
+    }
+
+    const { ids, type } = batchValidateCrimeSchema.parse(req.body);
+    const data = await batchValidateCrimeReports(ids, userId, type);
+
+    res.json({
+      message: "Batch validation processed successfully",
+      data,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Get moderation stats (MODERATOR+)
+export const moderationStats = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const data = await getModerationStats();
+    res.json({ data });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Get trend stats (ADMIN+)
+export const trendStats = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const data = await getCrimeTrends();
+    res.json({ data });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Get admin activity feed (ADMIN+)
+export const adminActivity = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const data = await getAdminActivity();
     res.json({ data });
   } catch (error) {
     next(error);

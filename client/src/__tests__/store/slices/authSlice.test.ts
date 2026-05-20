@@ -67,10 +67,15 @@ describe('auth slice', () => {
         _persist: { version: -1, rehydrated: true }
       },
       ui: {
-        isSidebarOpen: true,
-        isSidebarCollapsed: false,
-        activeModal: null,
+        sidebarOpen: true,
+        sidebarCollapsed: false,
+        mobileNavOpen: false,
         theme: 'light',
+        modals: {
+          confirmDelete: { isOpen: false },
+          crimeDetails: { isOpen: false },
+          reportForm: { isOpen: false },
+        },
         _persist: { version: -1, rehydrated: true }
       },
       map: {

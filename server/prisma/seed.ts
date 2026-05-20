@@ -88,12 +88,60 @@ async function main() {
     console.log(`✅ Created ${user.role} user: ${user.email}`);
   }
 
+  // Programmatically seed 30 additional dummy users to support rich pagination testing
+  console.log("\n👥 Seeding additional dummy users for pagination testing...");
+  const dummyPasswordHash = await bcrypt.hash("User@123", 10);
+  const dummyNames = [
+    "Rahim Uddin", "Karim Ahmed", "Fatema Begum", "Aisha Siddika", "Abul Kalam",
+    "Sufia Kamal", "Nurul Islam", "Rehana Parvin", "Mustafa Zaman", "Farida Yasmin",
+    "Kamrul Hasan", "Shirina Akter", "Mizanur Rahman", "Rasheda Khanam", "Anisur Zaman",
+    "Jahanara Imam", "Tariqul Islam", "Dilruba Khan", "Rafiqul Islam", "Selina Hossain",
+    "Ziaur Rahman", "Taslima Nasrin", "Humayun Ahmed", "Muhammed Zafar", "Tahmima Anam",
+    "Kazi Nazrul", "Rabindranath", "Begum Rokeya", "Michael Madhu", "Lalon Shah"
+  ];
+
+  for (let i = 1; i <= 30; i++) {
+    const email = `user${i}@crimetracker.bd`;
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (existingUser) {
+      continue;
+    }
+
+    // Distribute roles: 20 USER, 8 MODERATOR, 2 ADMIN
+    let role = UserRole.USER;
+    if (i > 20 && i <= 28) {
+      role = UserRole.MODERATOR;
+    } else if (i > 28) {
+      role = UserRole.ADMIN;
+    }
+
+    // Ban a couple of users to test the banned filters (every 7th user)
+    const isBanned = i % 7 === 0;
+
+    await prisma.user.create({
+      data: {
+        email,
+        passwordHash: dummyPasswordHash,
+        name: dummyNames[i - 1] || `Dummy User ${i}`,
+        role,
+        isVerified: true,
+        isBanned,
+      },
+    });
+  }
+  console.log("✅ Seeded 30 additional dummy users!");
+
   console.log("\n📍 Seeding Dhaka locations...");
   for (const location of dhakaLocations) {
-    await prisma.area.upsert({
+    const existingArea = await prisma.area.findFirst({
       where: { name: location.name },
-      update: {},
-      create: {
+    });
+    if (existingArea) continue;
+    await prisma.area.create({
+      data: {
         ...location,
         district: "Dhaka",
         division: "Dhaka",

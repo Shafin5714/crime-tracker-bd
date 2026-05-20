@@ -267,6 +267,34 @@ router.get("/heatmap", crimeController.heatmap);
  */
 router.get("/stats", crimeController.stats);
 
+router.post(
+  "/batch-validate",
+  requireAuth,
+  requireRole("MODERATOR"),
+  crimeController.batchValidate
+);
+
+router.get(
+  "/stats/moderation",
+  requireAuth,
+  requireRole("MODERATOR"),
+  crimeController.moderationStats
+);
+
+router.get(
+  "/stats/trends",
+  requireAuth,
+  requireRole("ADMIN"),
+  crimeController.trendStats
+);
+
+router.get(
+  "/admin/activity",
+  requireAuth,
+  requireRole("ADMIN"),
+  crimeController.adminActivity
+);
+
 /**
  * @swagger
  * /api/crimes/{id}:

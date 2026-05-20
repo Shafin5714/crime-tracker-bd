@@ -159,4 +159,55 @@ export const useValidateCrime = () => {
   });
 };
 
+/**
+ * Hook to get moderation stats
+ */
+export const useModerationStats = () => {
+  return useQuery({
+    queryKey: [...crimeKeys.all, "stats", "moderation"] as const,
+    queryFn: () => crimeService.getModerationStats(),
+  });
+};
+
+/**
+ * Hook to get historical daily crime trends
+ */
+export const useCrimeTrends = () => {
+  return useQuery({
+    queryKey: [...crimeKeys.all, "stats", "trends"] as const,
+    queryFn: () => crimeService.getCrimeTrends(),
+  });
+};
+
+/**
+ * Hook to get consolidated admin activities feed
+ */
+export const useAdminActivity = () => {
+  return useQuery({
+    queryKey: [...crimeKeys.all, "stats", "activity"] as const,
+    queryFn: () => crimeService.getAdminActivity(),
+    refetchInterval: 10000, // Auto-refresh every 10 seconds for real-time updates
+  });
+};
+
+/**
+ * Hook to batch validate (confirm/deny) crime reports
+ */
+export const useBatchValidateCrime = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ ids, type }: { ids: string[]; type: "CONFIRM" | "DENY" }) =>
+      crimeService.batchValidateCrime(ids, type),
+    onSuccess: () => {
+      // Invalidate crime lists to refresh grid
+      queryClient.invalidateQueries({ queryKey: crimeKeys.lists() });
+      // Invalidate moderation stats
+      queryClient.invalidateQueries({ queryKey: [...crimeKeys.all, "stats", "moderation"] });
+      // Invalidate trend stats
+      queryClient.invalidateQueries({ queryKey: [...crimeKeys.all, "stats", "trends"] });
+    },
+  });
+};
+
 export default useCrimes;

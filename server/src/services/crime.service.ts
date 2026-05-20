@@ -460,6 +460,210 @@ export const getCrimeStats = async (division?: string) => {
   };
 };
 
+// Batch validate crime reports
+export const batchValidateCrimeReports = async (
+  reportIds: string[],
+  userId: string,
+  type: ValidationType,
+) => {
+  const results = [];
+  const errors = [];
+
+  for (const reportId of reportIds) {
+    try {
+      const result = await validateCrimeReport(reportId, userId, { type });
+      results.push({ reportId, success: true, ...result });
+    } catch (error: any) {
+      errors.push({ reportId, success: false, message: error.message || "Unknown error" });
+    }
+  }
+
+  return { results, errors };
+};
+
+// Get daily moderation statistics
+export const getModerationStats = async () => {
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+
+  const [pendingCount, verifiedTodayCount, rejectedTodayCount, disputedCount] = await Promise.all([
+    prisma.crimeReport.count({
+      where: { status: ReportStatus.UNVERIFIED },
+    }),
+    prisma.crimeValidation.count({
+      where: {
+        type: ValidationType.CONFIRM,
+        createdAt: { gte: startOfToday },
+      },
+    }),
+    prisma.crimeValidation.count({
+      where: {
+        type: ValidationType.DENY,
+        createdAt: { gte: startOfToday },
+      },
+    }),
+    prisma.crimeReport.count({
+      where: { status: ReportStatus.DISPUTED },
+    }),
+  ]);
+
+  return {
+    pendingCount,
+    verifiedTodayCount,
+    rejectedTodayCount,
+    disputedCount,
+  };
+};
+
+// Get daily report submission trends (last 30 days)
+export const getCrimeTrends = async () => {
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  thirtyDaysAgo.setHours(0, 0, 0, 0);
+
+  const reports = await prisma.crimeReport.findMany({
+    where: {
+      createdAt: { gte: thirtyDaysAgo },
+    },
+    select: {
+      createdAt: true,
+    },
+    orderBy: {
+      createdAt: "asc",
+    },
+  });
+
+  // Group by date YYYY-MM-DD
+  const countsByDate: Record<string, number> = {};
+  
+  // Initialize last 30 days with 0
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const dateStr = d.toISOString().split("T")[0];
+    countsByDate[dateStr] = 0;
+  }
+
+  reports.forEach((report) => {
+    const dateStr = report.createdAt.toISOString().split("T")[0];
+    if (countsByDate[dateStr] !== undefined) {
+      countsByDate[dateStr] += 1;
+    }
+  });
+
+  // Map to recharts friendly format
+  const trends = Object.entries(countsByDate).map(([date, count]) => {
+    const parsedDate = new Date(date);
+    const formattedDate = parsedDate.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+    });
+    return {
+      date: formattedDate,
+      rawDate: date,
+      "Reports": count,
+    };
+  });
+
+  return trends;
+};
+
+// Get consolidated admin activity log
+export const getAdminActivity = async () => {
+  const [reports, validations, users] = await Promise.all([
+    prisma.crimeReport.findMany({
+      take: 10,
+      orderBy: { createdAt: "desc" },
+      include: {
+        user: {
+          select: {
+            name: true,
+            email: true,
+          },
+        },
+      },
+    }),
+    prisma.crimeValidation.findMany({
+      take: 10,
+      orderBy: { createdAt: "desc" },
+      include: {
+        user: {
+          select: {
+            name: true,
+            email: true,
+          },
+        },
+        report: {
+          select: {
+            crimeType: true,
+          },
+        },
+      },
+    }),
+    prisma.user.findMany({
+      take: 10,
+      orderBy: { createdAt: "desc" },
+    }),
+  ]);
+
+  const activities: Array<{
+    id: string;
+    action: string;
+    user: string;
+    time: string;
+    type: "success" | "info" | "destructive" | "warning";
+    createdAt: Date;
+  }> = [];
+
+  // Add report activities
+  reports.forEach((r) => {
+    const isCritical = r.severity === Severity.CRITICAL;
+    const crimeName = r.crimeType.replace(/_/g, " ").toLowerCase();
+    activities.push({
+      id: `report-${r.id}`,
+      action: isCritical 
+        ? `Critical alert raised: ${crimeName}`
+        : `New crime report submitted: ${crimeName}`,
+      user: r.isAnonymous ? "Anonymous" : (r.user?.name || r.user?.email || "User"),
+      time: "",
+      type: isCritical ? "warning" : "info",
+      createdAt: r.createdAt,
+    });
+  });
+
+  // Add validation activities
+  validations.forEach((v) => {
+    const crimeName = v.report.crimeType.replace(/_/g, " ").toLowerCase();
+    activities.push({
+      id: `validation-${v.id}`,
+      action: v.type === ValidationType.CONFIRM
+        ? `Report verified: ${crimeName}`
+        : `Report rejected: ${crimeName}`,
+      user: v.user?.name || v.user?.email || "Moderator",
+      time: "",
+      type: v.type === ValidationType.CONFIRM ? "success" : "destructive",
+      createdAt: v.createdAt,
+    });
+  });
+
+  // Add user registration activities
+  users.forEach((u) => {
+    activities.push({
+      id: `user-${u.id}`,
+      action: "New user registered",
+      user: u.name || u.email,
+      time: "",
+      type: "info",
+      createdAt: u.createdAt,
+    });
+  });
+
+  // Combine and sort by createdAt desc, take top 10
+  return activities
+    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+    .slice(0, 10);
+};
+
 // Haversine formula to calculate distance between two points
 function haversineDistance(
   lat1: number,

@@ -24,8 +24,17 @@ import {
   ArrowUpRight,
 } from "lucide-react";
 import { PrivateRoute } from "@/components/auth";
-import { useCrimes } from "@/hooks/useCrimes";
+import { useCrimes, useCrimeTrends, useAdminActivity } from "@/hooks/useCrimes";
 import { ReportStatus, CrimeType, Severity, UserRole } from "@/types/api.types";
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
 const crimeTypeLabels: Record<CrimeType, string> = {
   [CrimeType.THEFT]: "Theft",
@@ -46,11 +55,32 @@ const crimeTypeLabels: Record<CrimeType, string> = {
 };
 
 function DashboardContent() {
+  const [isMounted, setIsMounted] = React.useState(false);
+  React.useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   const { data: allReports, isLoading } = useCrimes({ limit: 100 });
   const { data: pendingReports } = useCrimes({
     status: ReportStatus.UNVERIFIED,
     limit: 5,
   });
+  const { data: trendData, isLoading: isLoadingTrends } = useCrimeTrends();
+  const { data: activities, isLoading: isLoadingActivity } = useAdminActivity();
+
+  const getRelativeTime = (dateString: string) => {
+    const now = new Date();
+    const date = new Date(dateString);
+    const diffMs = now.getTime() - date.getTime();
+    const diffMin = Math.floor(diffMs / 60000);
+    const diffHour = Math.floor(diffMin / 60);
+    const diffDay = Math.floor(diffHour / 24);
+
+    if (diffMin < 1) return "Just now";
+    if (diffMin < 60) return `${diffMin}m ago`;
+    if (diffHour < 24) return `${diffHour}h ago`;
+    return `${diffDay}d ago`;
+  };
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -253,27 +283,70 @@ function DashboardContent() {
           </CardContent>
         </Card>
 
-        {/* Trend Placeholder */}
+        {/* Trend Chart */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <TrendingUp className="size-5" />
               Reports Over Time
             </CardTitle>
-            <CardDescription>Daily report submissions</CardDescription>
+            <CardDescription>Daily report submissions (Last 30 days)</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="flex h-[200px] items-center justify-center rounded-lg border border-dashed bg-muted/20">
-              <div className="text-center">
-                <BarChart3 className="mx-auto size-10 text-muted-foreground/50 mb-2" />
-                <p className="text-sm text-muted-foreground">
-                  Chart visualization coming soon
-                </p>
-                <p className="text-xs text-muted-foreground/70">
-                  Integrate with Recharts for trends
-                </p>
+            {isLoadingTrends || !isMounted ? (
+              <div className="flex h-[200px] items-center justify-center">
+                <Skeleton className="h-full w-full rounded-lg" />
               </div>
-            </div>
+            ) : !trendData || trendData.length === 0 ? (
+              <p className="text-center text-muted-foreground py-8">
+                No data available
+              </p>
+            ) : (
+              <div className="h-[200px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={trendData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="colorReports" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.4}/>
+                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.0}/>
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.1} />
+                    <XAxis 
+                      dataKey="date" 
+                      stroke="#888888" 
+                      fontSize={11} 
+                      tickLine={false} 
+                      axisLine={false}
+                    />
+                    <YAxis 
+                      stroke="#888888" 
+                      fontSize={11} 
+                      tickLine={false} 
+                      axisLine={false} 
+                      allowDecimals={false}
+                    />
+                    <Tooltip 
+                      contentStyle={{ 
+                        background: "rgba(255, 255, 255, 0.9)", 
+                        border: "1px solid rgba(0, 0, 0, 0.1)",
+                        borderRadius: "8px",
+                      }}
+                      labelClassName="font-semibold text-xs text-black"
+                      itemStyle={{ color: "#3b82f6", fontSize: "12px" }}
+                    />
+                    <Area 
+                      type="monotone" 
+                      dataKey="Reports" 
+                      stroke="#3b82f6" 
+                      strokeWidth={2}
+                      fillOpacity={1} 
+                      fill="url(#colorReports)" 
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -332,63 +405,51 @@ function DashboardContent() {
             <CardDescription>Latest system events</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {[
-                {
-                  action: "Report verified",
-                  user: "Moderator",
-                  time: "2 min ago",
-                  type: "success",
-                },
-                {
-                  action: "New report submitted",
-                  user: "Anonymous",
-                  time: "5 min ago",
-                  type: "info",
-                },
-                {
-                  action: "Report rejected",
-                  user: "Admin",
-                  time: "12 min ago",
-                  type: "destructive",
-                },
-                {
-                  action: "User registered",
-                  user: "System",
-                  time: "1 hour ago",
-                  type: "info",
-                },
-                {
-                  action: "Critical alert raised",
-                  user: "System",
-                  time: "2 hours ago",
-                  type: "warning",
-                },
-              ].map((activity, index) => (
-                <div key={index} className="flex items-center gap-3">
-                  <div
-                    className={`size-2 rounded-full ${
-                      activity.type === "success"
-                        ? "bg-green-500"
-                        : activity.type === "destructive"
-                        ? "bg-red-500"
-                        : activity.type === "warning"
-                        ? "bg-yellow-500"
-                        : "bg-blue-500"
-                    }`}
-                  />
-                  <div className="flex-1">
-                    <p className="text-sm">{activity.action}</p>
-                    <p className="text-xs text-muted-foreground">
-                      by {activity.user}
-                    </p>
+            {isLoadingActivity ? (
+              <div className="space-y-4">
+                {[...Array(5)].map((_, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <Skeleton className="size-2 rounded-full" />
+                    <div className="flex-1 space-y-1">
+                      <Skeleton className="h-4 w-3/4" />
+                      <Skeleton className="h-3 w-1/4" />
+                    </div>
+                    <Skeleton className="h-3 w-10" />
                   </div>
-                  <span className="text-xs text-muted-foreground">
-                    {activity.time}
-                  </span>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : !activities || activities.length === 0 ? (
+              <p className="text-center text-muted-foreground py-8">
+                No recent activity
+              </p>
+            ) : (
+              <div className="space-y-4">
+                {activities.map((activity) => (
+                  <div key={activity.id} className="flex items-center gap-3">
+                    <div
+                      className={`size-2 rounded-full shrink-0 ${
+                        activity.type === "success"
+                          ? "bg-green-500"
+                          : activity.type === "destructive"
+                          ? "bg-red-500"
+                          : activity.type === "warning"
+                          ? "bg-yellow-500"
+                          : "bg-blue-500"
+                      }`}
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm truncate font-medium">{activity.action}</p>
+                      <p className="text-xs text-muted-foreground">
+                        by {activity.user}
+                      </p>
+                    </div>
+                    <span className="text-xs text-muted-foreground shrink-0">
+                      {getRelativeTime(activity.createdAt)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

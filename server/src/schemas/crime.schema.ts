@@ -58,6 +58,16 @@ export const validateCrimeSchema = z.object({
 
 export type ValidateCrimeInput = z.infer<typeof validateCrimeSchema>;
 
+// Batch validate crime reports schema
+export const batchValidateCrimeSchema = z.object({
+  ids: z.array(z.string()),
+  type: z.nativeEnum(ValidationType, {
+    errorMap: () => ({ message: "Type must be CONFIRM or DENY" }),
+  }),
+});
+
+export type BatchValidateCrimeInput = z.infer<typeof batchValidateCrimeSchema>;
+
 // Query params schema for listing crimes
 export const listCrimesQuerySchema = z.object({
   // Pagination

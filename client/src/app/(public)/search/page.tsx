@@ -94,9 +94,10 @@ export default function SearchPage() {
     }
 
     try {
-      const area = await areaService.searchArea(searchQuery);
+      const areas = await areaService.searchArea(searchQuery);
 
-      if (area) {
+      if (areas && areas.length > 0) {
+        const area = areas[0];
         showInfo(`Showing results for ${area.name}`);
         setFilters((prev) => ({
           ...prev,

@@ -161,6 +161,79 @@ export const crimeService = {
       ...additionalFilters,
     });
   },
+
+  /**
+   * Get moderation statistics
+   */
+  async getModerationStats(): Promise<{
+    pendingCount: number;
+    verifiedTodayCount: number;
+    rejectedTodayCount: number;
+    disputedCount: number;
+  }> {
+    const response = await apiClient.get<ApiSuccessResponse<{
+      pendingCount: number;
+      verifiedTodayCount: number;
+      rejectedTodayCount: number;
+      disputedCount: number;
+    }>>(`${CRIMES_BASE}/stats/moderation`);
+    return response.data.data;
+  },
+
+  /**
+   * Get historical crime report trends (last 30 days)
+   */
+  async getCrimeTrends(): Promise<Array<{
+    date: string;
+    rawDate: string;
+    Reports: number;
+  }>> {
+    const response = await apiClient.get<ApiSuccessResponse<Array<{
+      date: string;
+      rawDate: string;
+      Reports: number;
+    }>>>(`${CRIMES_BASE}/stats/trends`);
+    return response.data.data;
+  },
+
+  /**
+   * Get consolidated admin/moderator activity feed
+   */
+  async getAdminActivity(): Promise<Array<{
+    id: string;
+    action: string;
+    user: string;
+    time: string;
+    type: "success" | "info" | "destructive" | "warning";
+    createdAt: string;
+  }>> {
+    const response = await apiClient.get<ApiSuccessResponse<Array<{
+      id: string;
+      action: string;
+      user: string;
+      time: string;
+      type: "success" | "info" | "destructive" | "warning";
+      createdAt: string;
+    }>>>(`${CRIMES_BASE}/admin/activity`);
+    return response.data.data;
+  },
+
+  /**
+   * Batch validate crime reports (confirm/deny)
+   */
+  async batchValidateCrime(
+    ids: string[],
+    type: "CONFIRM" | "DENY"
+  ): Promise<{
+    results: any[];
+    errors: any[];
+  }> {
+    const response = await apiClient.post<ApiSuccessResponse<{
+      results: any[];
+      errors: any[];
+    }>>(`${CRIMES_BASE}/batch-validate`, { ids, type });
+    return response.data.data;
+  },
 };
 
 export default crimeService;

@@ -82,6 +82,28 @@ export const userService = {
     );
     return response.data.user;
   },
+
+  /**
+   * Get user statistics for admin dashboard (Admin only)
+   */
+  async getUserStats(): Promise<{
+    totalUsers: number;
+    roleDistribution: Record<string, number>;
+    bannedCount: number;
+    verifiedCount: number;
+    unverifiedCount: number;
+  }> {
+    const response = await apiClient.get<{
+      stats: {
+        totalUsers: number;
+        roleDistribution: Record<string, number>;
+        bannedCount: number;
+        verifiedCount: number;
+        unverifiedCount: number;
+      };
+    }>(`${USERS_BASE}/stats`);
+    return response.data.stats;
+  },
 };
 
 export default userService;

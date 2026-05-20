@@ -16,7 +16,8 @@ import {
 } from "lucide-react";
 
 import { PrivateRoute } from "@/components/auth";
-import { useCrimes, useValidateCrime } from "@/hooks/useCrimes";
+import { useCrimes, useValidateCrime, useModerationStats, useBatchValidateCrime } from "@/hooks/useCrimes";
+import { Checkbox } from "@/components/ui/checkbox";
 import { EmptyState } from "@/components/common/EmptyState";
 import { Pagination } from "@/components/common/Pagination";
 import { showSuccess, showError } from "@/lib/toast";
@@ -63,9 +64,45 @@ function ModerationContent() {
   });
   const [selectedReport, setSelectedReport] =
     React.useState<CrimeReport | null>(null);
+  const [selectedIds, setSelectedIds] = React.useState<string[]>([]);
 
   const { data, isLoading, refetch } = useCrimes(filters);
   const { mutate: validateCrime, isPending: isValidating } = useValidateCrime();
+  const { data: modStats, isLoading: isLoadingStats, refetch: refetchStats } = useModerationStats();
+  const { mutate: batchValidateCrime, isPending: isBatchValidating } = useBatchValidateCrime();
+
+  // Reset batch selection when status tab changes
+  React.useEffect(() => {
+    setSelectedIds([]);
+  }, [filters.status]);
+
+  const handleBatchValidate = (type: "CONFIRM" | "DENY") => {
+    if (selectedIds.length === 0) return;
+    
+    batchValidateCrime(
+      { ids: selectedIds, type },
+      {
+        onSuccess: (res: any) => {
+          const successCount = res?.results?.length ?? 0;
+          const failCount = res?.errors?.length ?? 0;
+          
+          if (failCount > 0) {
+            showSuccess(`Processed batch. Success: ${successCount}, Failed: ${failCount}`);
+          } else {
+            showSuccess(`Successfully batch ${type === "CONFIRM" ? "verified" : "rejected"} ${successCount} reports!`);
+          }
+          
+          setSelectedIds([]);
+          setSelectedReport(null);
+          refetch();
+          refetchStats();
+        },
+        onError: (error) => {
+          showError(error instanceof Error ? error.message : "Batch validation failed");
+        },
+      }
+    );
+  };
 
   const handleValidate = (id: string, type: ValidationType) => {
     validateCrime(
@@ -125,9 +162,13 @@ function ModerationContent() {
               <Clock className="size-6 text-yellow-600" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Pending</p>
+              <p className="text-sm text-muted-foreground">Pending Queue</p>
               <p className="text-2xl font-bold">
-                {data?.pagination.total || 0}
+                {isLoadingStats ? (
+                  <Skeleton className="h-8 w-16" />
+                ) : (
+                  modStats?.pendingCount ?? 0
+                )}
               </p>
             </div>
           </CardContent>
@@ -139,7 +180,13 @@ function ModerationContent() {
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Verified Today</p>
-              <p className="text-2xl font-bold">-</p>
+              <p className="text-2xl font-bold">
+                {isLoadingStats ? (
+                  <Skeleton className="h-8 w-16" />
+                ) : (
+                  modStats?.verifiedTodayCount ?? 0
+                )}
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -150,7 +197,13 @@ function ModerationContent() {
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Rejected Today</p>
-              <p className="text-2xl font-bold">-</p>
+              <p className="text-2xl font-bold">
+                {isLoadingStats ? (
+                  <Skeleton className="h-8 w-16" />
+                ) : (
+                  modStats?.rejectedTodayCount ?? 0
+                )}
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -161,7 +214,13 @@ function ModerationContent() {
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Disputed</p>
-              <p className="text-2xl font-bold">-</p>
+              <p className="text-2xl font-bold">
+                {isLoadingStats ? (
+                  <Skeleton className="h-8 w-16" />
+                ) : (
+                  modStats?.disputedCount ?? 0
+                )}
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -173,7 +232,36 @@ function ModerationContent() {
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle>Reports Queue</CardTitle>
+                <div className="flex items-center gap-4">
+                  {data?.data && data.data.length > 0 && filters.status === ReportStatus.UNVERIFIED && (
+                    <div className="flex items-center gap-2 border-r pr-4 border-muted">
+                      <Checkbox
+                        checked={
+                          data.data.length > 0 &&
+                          data.data.every((r) => selectedIds.includes(r.id))
+                        }
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            setSelectedIds((prev) => {
+                              const newIds = [...prev];
+                              data.data.forEach((r) => {
+                                if (!newIds.includes(r.id)) newIds.push(r.id);
+                              });
+                              return newIds;
+                            });
+                          } else {
+                            setSelectedIds((prev) =>
+                              prev.filter((id) => !data.data.some((r) => r.id === id))
+                            );
+                          }
+                        }}
+                        aria-label="Select all reports"
+                      />
+                      <span className="text-xs text-muted-foreground select-none">Select All</span>
+                    </div>
+                  )}
+                  <CardTitle>Reports Queue</CardTitle>
+                </div>
                 <Tabs value={filters.status} onValueChange={handleStatusFilter}>
                   <TabsList>
                     <TabsTrigger value={ReportStatus.UNVERIFIED}>
@@ -214,6 +302,24 @@ function ModerationContent() {
                           : ""
                       }`}
                     >
+                      {filters.status === ReportStatus.UNVERIFIED && (
+                        <div 
+                          onClick={(e) => e.stopPropagation()} 
+                          className="flex items-center justify-center pt-2.5 self-start shrink-0"
+                        >
+                          <Checkbox
+                            checked={selectedIds.includes(report.id)}
+                            onCheckedChange={(checked) => {
+                              if (checked) {
+                                setSelectedIds((prev) => [...prev, report.id]);
+                              } else {
+                                setSelectedIds((prev) => prev.filter((id) => id !== report.id));
+                              }
+                            }}
+                            aria-label={`Select report ${report.id}`}
+                          />
+                        </div>
+                      )}
                       <div
                         className={`flex size-10 shrink-0 items-center justify-center rounded-lg ${
                           severityColors[report.severity]
@@ -367,6 +473,46 @@ function ModerationContent() {
           </Card>
         </div>
       </div>
+
+      {/* Floating Batch Actions Bar */}
+      {selectedIds.length > 0 && (
+        <div className="fixed bottom-6 left-1/2 z-50 flex -translate-x-1/2 items-center gap-4 rounded-full border border-primary/20 bg-background/90 px-6 py-3 shadow-xl backdrop-blur-md animate-in fade-in slide-in-from-bottom-4 duration-300">
+          <span className="text-sm font-medium text-foreground select-none">
+            {selectedIds.length} report{selectedIds.length > 1 ? "s" : ""} selected
+          </span>
+          <div className="h-4 w-px bg-muted" />
+          <div className="flex gap-2">
+            <Button
+              size="sm"
+              className="bg-green-600 hover:bg-green-700 text-white rounded-full flex items-center gap-1.5"
+              onClick={() => handleBatchValidate("CONFIRM")}
+              disabled={isBatchValidating}
+            >
+              <CheckCircle2 className="size-3.5" />
+              Verify Selected
+            </Button>
+            <Button
+              size="sm"
+              variant="destructive"
+              className="rounded-full flex items-center gap-1.5"
+              onClick={() => handleBatchValidate("DENY")}
+              disabled={isBatchValidating}
+            >
+              <XCircle className="size-3.5" />
+              Reject Selected
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="rounded-full text-muted-foreground hover:text-foreground"
+              onClick={() => setSelectedIds([])}
+              disabled={isBatchValidating}
+            >
+              Cancel
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

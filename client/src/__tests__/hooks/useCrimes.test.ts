@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest'
-import { renderHook, waitFor } from '@/test-utils/render'
+import { describe, it, expect, vi } from 'vitest'
+import { renderHook } from '@/test-utils/render'
 import { useCrimes, useSubmitCrime } from '@/hooks/useCrimes'
 import { server } from '@/test-utils/mocks/server'
 import { http, HttpResponse } from 'msw'
@@ -22,7 +22,7 @@ describe('useCrimes hook', () => {
 
     const { result } = renderHook(() => useCrimes())
 
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(result.current.isSuccess).toBe(true)
     })
 

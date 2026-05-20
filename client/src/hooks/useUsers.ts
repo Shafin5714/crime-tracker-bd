@@ -93,4 +93,14 @@ export const useUnbanUser = () => {
   });
 };
 
+/**
+ * Hook to get user stats (Admin only)
+ */
+export const useUserStats = () => {
+  return useQuery({
+    queryKey: [...userKeys.all, "stats"] as const,
+    queryFn: () => userService.getUserStats(),
+  });
+};
+
 export default useUsers;
